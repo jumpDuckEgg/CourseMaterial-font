@@ -1,24 +1,72 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import mainPage from '@/page/mainPage.vue'
-import login from '@/page/login.vue'
-import register from '@/page/register.vue'
+import store from '../store/index.js'
+
 Vue.use(Router)
 
-export default new Router({
+//路由懒加载，如果是import方式进行导入，webpack将会把所有东西打包成一个文件，打包出来的文件将会很大，而懒加载将会打包成多个文件，当路由跳转时再加载相对应的文件
+const Login = resolve => {
+  require.ensure(['@/page/login.vue'], () => {
+    resolve(require('@/page/login.vue'));
+  });
+};
+
+const Register = resolve => {
+  require.ensure(['@/page/register.vue'], () => {
+    resolve(require('@/page/register.vue'));
+  });
+};
+
+const MainPage = resolve => {
+  require.ensure(['@/page/mainPage.vue'], () => {
+    resolve(require('@/page/mainPage.vue'));
+  });
+};
+
+//单独变量router是为了对路由进行拦截
+const router = new Router({
+  mode: 'history',//更改路由的url显示方式，即少了'/#/'
   routes: [
     {
       path: '/',
       name: 'mainPage',
-      component: mainPage
-    },{
-      path:'/login',
-      name:'login',
-      component:login
-    },{
-      path:'/register',
-      name:'register',
-      component:register
+      component: MainPage,
+      meta: {
+        requiresAuth: true
+      }
+    }, {
+      path: '/login',
+      name: 'login',
+      component: Login
+    }, {
+      path: '/register',
+      name: 'register',
+      component: Register
     }
   ]
 })
+
+//注册全局钩子来进行拦截
+router.beforeEach((to,from,next)=>{
+  //获取store里面的token
+  let token = store.state.token;
+  //判断要去的路由有没有requiresAuth（此功能时验证首页）
+  if(to.meta.requiresAuth){
+    // 是否有token，有即代表有登陆过，没有反之
+    if(token){
+      //通过
+      next();
+    }else{
+      //没有登陆，转跳登陆界面
+      next({
+        path:'/login',
+        query:{redirect:to.fullPath}
+      })
+    }
+  }else{
+    // 不需要用验证，即该路由不需要用到token的验证，给与通过
+    next();
+  }
+})
+
+export default router;

@@ -1,5 +1,7 @@
 <template>
-
+  <div> 
+    我是注册界面
+  </div>
 </template>
 
 <script>
