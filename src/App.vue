@@ -1,7 +1,9 @@
 <template>
   <div id="app">
     <v-app>
+      <v-content>
       <router-view/>
+      </v-content>
     </v-app>   
   </div>
 </template>
@@ -12,6 +14,6 @@ export default {
 };
 </script>
 
-<style >
+<style lang='scss' >
 
 </style>

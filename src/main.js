@@ -6,13 +6,18 @@ import router from './router'
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 import 'material-design-icons/iconfont/material-icons.css'
+import store from './store/index.js'
+
 Vue.use(Vuetify)
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
-new Vue({
+const vue = new Vue({
   el: '#app',
+  store,
   router,
   components: { App },
   template: '<App/>'
 })
+
+export default vue;
