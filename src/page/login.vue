@@ -38,12 +38,12 @@
                         label="密码"
                         v-model="password"
                         :rules="passwordRules"
-                        type="password"
+                        type="password" @keyup.enter='sumbmitInfo'
                       ></v-text-field>
                     </v-form>
                 </v-card-text>
                 <v-card-actions>
-                  <v-btn  color="info" :loading="loading" :disabled="loading" @click="sumbmitInfo">登录
+                  <v-btn  color="info" :loading="loading" :disabled="loading" @click="sumbmitInfo" >登录
                     <span slot="loader">Loading...</span>
                   </v-btn>
                   <v-btn  color="info" @click="reset">重置</v-btn>

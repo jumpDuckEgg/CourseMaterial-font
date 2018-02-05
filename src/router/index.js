@@ -23,17 +23,29 @@ const MainPage = resolve => {
   });
 };
 
+const mainCotent = resolve => {
+  require.ensure(['@/page/main/index.vue'], () => {
+    resolve(require('@/page/main/index.vue'));
+  });
+};
 //单独变量router是为了对路由进行拦截
 const router = new Router({
   mode: 'history',//更改路由的url显示方式，即少了'/#/'
   routes: [
     {
       path: '/',
-      name: 'mainPage',
       component: MainPage,
       meta: {
         requiresAuth: true
-      }
+      },
+      children:[
+        {
+          path:'',
+          name:'mainCotent',
+          component:mainCotent,
+         
+        }
+      ]
     }, {
       path: '/login',
       name: 'login',
@@ -53,6 +65,7 @@ router.beforeEach((to,from,next)=>{
   //判断要去的路由有没有requiresAuth（此功能时验证首页）
   if(to.meta.requiresAuth){
     // 是否有token，有即代表有登陆过，没有反之
+    console.log(to.meta.requiresAuth)
     if(token){
       //通过
       next();

@@ -1,13 +1,15 @@
-<template>
-
+<template>  
+    <div>
+       
+    </div>
 </template>
 
 <script>
 export default {
-  name: 'App'
-}
+  name: ""
+};
 </script>
 
-<style>
+<style lang="scss">
 
 </style>
