@@ -43,7 +43,9 @@ const router = new Router({
           path:'',
           name:'mainCotent',
           component:mainCotent,
-         
+          meta: {
+            requiresAuth: true
+          }
         }
       ]
     }, {
