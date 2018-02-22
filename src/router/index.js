@@ -28,6 +28,14 @@ const mainCotent = resolve => {
     resolve(require('@/page/main/index.vue'));
   });
 };
+
+const CourseInformation = resolve =>{
+  require.ensure(['@/page/main/courseInformation.vue'],()=>{
+    resolve(require('@/page/main/courseInformation.vue'));
+  })
+}
+
+
 //单独变量router是为了对路由进行拦截
 const router = new Router({
   mode: 'history',//更改路由的url显示方式，即少了'/#/'
@@ -43,6 +51,13 @@ const router = new Router({
           path:'',
           name:'mainCotent',
           component:mainCotent,
+          meta: {
+            requiresAuth: true
+          }
+        },{
+          path:'course',
+          name:'courseInformation',
+          component:CourseInformation,
           meta: {
             requiresAuth: true
           }
