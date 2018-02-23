@@ -122,7 +122,7 @@ export default {
   }
 };
 </script>
-<style>
+<style lang="scss" scoped>
 .login {
   background-image: url("../../static/material_background.png");
   background-size: cover;

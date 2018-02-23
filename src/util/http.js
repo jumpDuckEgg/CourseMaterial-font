@@ -40,12 +40,12 @@ instance.interceptors.response.use(
             switch(error.response.status){
                 case 401:
                     store.dispatch('UserLogout');
-                    vm.$notify({
-                        type:'warning',
-                        message:'登录信息已过期，请重新登陆'
-                    })
+                    // vm.$notify({
+                    //     type:'warning',
+                    //     message:'登录信息已过期，请重新登陆'
+                    // })
                     router.replace({
-                        path:'login',
+                        path:'/login',
                         query:{
                             redirect: router.currentRoute.fullPath
                         }

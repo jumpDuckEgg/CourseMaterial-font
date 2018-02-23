@@ -2,7 +2,7 @@
     <v-container>
         <v-layout row wrap>
              <v-flex  xs6 sm4 lg3 xl2  v-for="(item,index) in courses" :key="index" mt-5 px-3>
-                  <v-card hover to='/course' tile>
+                  <v-card hover :to='"/course/"+item.course_id' tile>
                     <v-card-media
                     class="white--text"
                     height="150px"     
@@ -18,14 +18,14 @@
                     </v-card-media>
                     <v-card-title>
                     <div>
-                            <span class="grey--text">{{item.createdTime|formatDate}}</span><br>
-                            <span>
+                            <div class="grey--text">{{item.createdTime|formatDate}}</div>
+                            <div>
                                 <template v-for="starIndex in item.star">
                                     <i class="material-icons" :key='starIndex' style="color:red">grade</i>
                                 </template>
-                            </span><br>
-                            <span>作者：{{item.author}}</span><br>
-                            <span>简介：{{item.description}}</span>
+                            </div>
+                            <div>作者：{{item.author}}</div>
+                            <div>简介：{{item.description}}</div>
                         <!-- <span>我是总问阿大撒大啊实打实啊实打实打实打阿三大苏打阿三阿三</span> -->
                     </div>
                     </v-card-title>
@@ -58,7 +58,6 @@ export default {
       api.findAllCourse(data).then(res=>{
           if(res.code == 8){
               this.courses = res.data;
-              console.log(res.data)
           }
       })
   },
@@ -70,6 +69,8 @@ export default {
 };
 </script>
 
-<style lang="scss">
-
+<style lang="scss" scoped>
+.headline{
+    text-shadow: 5px 5px 5px black;
+}
 </style>

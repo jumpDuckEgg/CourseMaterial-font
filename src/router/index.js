@@ -35,6 +35,12 @@ const CourseInformation = resolve =>{
   })
 }
 
+const OnlineTest = resolve=>{
+  require.ensure(['@/page/main/onlineTest.vue'],()=>{
+    resolve(require('@/page/main/onlineTest.vue'));
+  })
+}
+
 
 //单独变量router是为了对路由进行拦截
 const router = new Router({
@@ -55,9 +61,16 @@ const router = new Router({
             requiresAuth: true
           }
         },{
-          path:'course',
+          path:'course/:id',
           name:'courseInformation',
           component:CourseInformation,
+          meta: {
+            requiresAuth: true
+          }
+        },{
+          path:'onlineTest/:id',
+          name:'onlineTest',
+          component:OnlineTest,
           meta: {
             requiresAuth: true
           }
