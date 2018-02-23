@@ -35,9 +35,10 @@
                               <div class="no-content"><v-icon color="grey lighten-1">info</v-icon>暂无此资源</div>
                             </template>  
                             <v-list two-line >
-                              <v-list-tile avatar v-for="item in coursewares" :key="item.courseware_id" >
+                              <template v-for="(item,index) in coursewares">
+                              <v-list-tile avatar  :key="item.courseware_id" >
                                 <v-list-tile-avatar>
-                                   <v-icon large color="blue  darken-2">folder</v-icon>
+                                   <v-icon large color="blue  darken-2">description</v-icon>
                                 </v-list-tile-avatar>
                                 <v-list-tile-content>
                                   <v-list-tile-title>{{ item.courseware_name }}</v-list-tile-title>
@@ -49,6 +50,8 @@
                                   </v-btn>
                                 </v-list-tile-action>
                               </v-list-tile>
+                              <v-divider v-if="index + 1 < coursewares.length" :key="`divider-${index}`"></v-divider>
+                              </template>
                             </v-list>
                           </template>
                           <template v-if="item.key=='experiments'">
@@ -57,9 +60,10 @@
                             </template>  
                             <!-- {{experiments}} -->
                             <v-list two-line >
-                              <v-list-tile avatar v-for="item in experiments" :key="item.experiment_id" >
+                              <template v-for="(item,index) in experiments">
+                              <v-list-tile avatar  :key="item.experiment_id" >
                                 <v-list-tile-avatar>
-                                   <v-icon large color="blue  darken-2">folder</v-icon>
+                                   <v-icon large color="blue  darken-2">description</v-icon>
                                 </v-list-tile-avatar>
                                 <v-list-tile-content>
                                   <v-list-tile-title>{{ item.experiment_name }}</v-list-tile-title>
@@ -71,6 +75,8 @@
                                   </v-btn>
                                 </v-list-tile-action>
                               </v-list-tile>
+                              <v-divider v-if="index + 1 < experiments.length" :key="`divider-${index}`"></v-divider>
+                              </template>
                             </v-list>
                           </template>
                           <template v-if="item.key=='tests'">
@@ -79,9 +85,10 @@
                             </template>  
                             <!-- {{tests}} -->
                             <v-list two-line >
-                              <v-list-tile avatar v-for="item in tests" :key="item.test_id" >
+                              <template v-for="(item,index) in tests">
+                              <v-list-tile avatar  :key="item.test_id" >
                                 <v-list-tile-avatar>
-                                   <v-icon large color="blue  darken-2">folder</v-icon>
+                                   <v-icon large color="blue  darken-2">description</v-icon>
                                 </v-list-tile-avatar>
                                 <v-list-tile-content>
                                   <v-list-tile-title>{{ item.test_name }}</v-list-tile-title>
@@ -93,6 +100,8 @@
                                   </v-btn>
                                 </v-list-tile-action>
                               </v-list-tile>
+                              <v-divider v-if="index + 1 < tests.length" :key="`divider-${index}`"></v-divider>
+                              </template>
                             </v-list>
                           </template>
                           <template v-if="item.key=='videos'">
@@ -101,9 +110,10 @@
                             </template>  
                             <!-- {{videos}} -->
                             <v-list two-line >
-                              <v-list-tile avatar v-for="item in videos" :key="item.video_id" >
+                              <template v-for="(item,index) in videos">
+                              <v-list-tile avatar  :key="item.video_id" >
                                 <v-list-tile-avatar>
-                                   <v-icon large color="blue  darken-2">folder</v-icon>
+                                   <v-icon large color="blue  darken-2">ondemand_video</v-icon>
                                 </v-list-tile-avatar>
                                 <v-list-tile-content>
                                   <v-list-tile-title>{{ item.video_name }}</v-list-tile-title>
@@ -115,6 +125,8 @@
                                   </v-btn>
                                 </v-list-tile-action>
                               </v-list-tile>
+                              <v-divider v-if="index + 1 < videos.length" :key="`divider-${index}`"></v-divider>
+                              </template>
                             </v-list>
                           </template>
                           <template v-if="item.key=='homeworks'">
@@ -123,9 +135,10 @@
                             </template>  
                             <!-- {{homeworks}} -->
                             <v-list two-line >
-                              <v-list-tile avatar v-for="item in homeworks" :key="item.homework_id" >
+                              <template v-for="(item,index) in homeworks">
+                              <v-list-tile avatar  :key="item.homework_id" >
                                 <v-list-tile-avatar>
-                                   <v-icon large color="blue  darken-2">folder</v-icon>
+                                   <v-icon large color="blue  darken-2">school</v-icon>
                                 </v-list-tile-avatar>
                                 <v-list-tile-content>
                                   <v-list-tile-title>{{ item.homework_name }}</v-list-tile-title>
@@ -137,15 +150,18 @@
                                   </v-btn>
                                 </v-list-tile-action>
                               </v-list-tile>
+                              <v-divider v-if="index + 1 < homeworks.length" :key="`divider-${index}`"></v-divider>
+                              </template>
                             </v-list>
                           </template>
                            <template v-if="item.key=='onlineTests'">
                             <template v-if="onlineTests.length == 0">
                               <div  class="no-content"><v-icon color="grey lighten-1">info</v-icon>暂无此资源</div>
                             </template>  
-                            <!-- {{homeworks}} -->
+                            <!-- {{onlineTests}} -->
                             <v-list two-line >
-                              <v-list-tile avatar v-for="item in onlineTests" :key="item.onlineTest_id" :to='"/onlineTest/"+item.onlineTest_id' >
+                               <template v-for="(item,index) in onlineTests">
+                              <v-list-tile avatar  :key="item.onlineTest_id" :to='"/onlineTest/"+item.onlineTest_id' >
                                 <v-list-tile-avatar>
                                    <v-icon large color="blue  darken-2">assessment</v-icon>
                                 </v-list-tile-avatar>
@@ -154,11 +170,13 @@
                                   <v-list-tile-sub-title>{{ item.createdTime |formatDate }}</v-list-tile-sub-title>
                                 </v-list-tile-content>
                                 <v-list-tile-action>
-                                  <v-btn icon ripple>
-                                    <v-icon color="grey lighten-1">info</v-icon>
+                                  <v-btn  ripple>
+                                    <v-icon color="grey lighten-1">play_circle_filled</v-icon>点击进入测试
                                   </v-btn>
                                 </v-list-tile-action>
                               </v-list-tile>
+                              <v-divider v-if="index + 1 < onlineTests.length" :key="`divider-${index}`"></v-divider>
+                              </template>
                             </v-list>
                           </template>
                       </v-card-text>
