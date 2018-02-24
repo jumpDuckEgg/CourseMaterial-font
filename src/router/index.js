@@ -41,6 +41,13 @@ const OnlineTest = resolve=>{
   })
 }
 
+const VideoPlay = resolve =>{
+  require.ensure(['@/page/main/videoPlay.vue'],()=>{
+    resolve(require('@/page/main/videoPlay.vue'))
+  })
+}
+
+
 
 //单独变量router是为了对路由进行拦截
 const router = new Router({
@@ -74,7 +81,15 @@ const router = new Router({
           meta: {
             requiresAuth: true
           }
-        }
+        },{
+          path:'videos/:id',
+          name:'videos',
+          component:VideoPlay,
+          meta: {
+            requiresAuth: true
+          }
+        },
+        
       ]
     }, {
       path: '/login',

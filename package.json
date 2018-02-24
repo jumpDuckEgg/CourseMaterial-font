@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "axios": "^0.17.1",
+    "dplayer": "^1.22.2",
+    "lodash": "^4.17.5",
     "moment": "^2.20.1",
     "node-sass": "^4.7.2",
     "sass-loader": "^6.0.6",

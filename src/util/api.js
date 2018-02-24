@@ -26,4 +26,8 @@ export default {
     getOnlineTesById(params) {
         return api.post('/onlineTest/getOnlineTestById', params).then(res => res.data)
     },
+    // 查找视频资源通过ID
+    getVideoById(params) {
+        return api.post('/video/findVideo', params).then(res => res.data);
+    }
 }

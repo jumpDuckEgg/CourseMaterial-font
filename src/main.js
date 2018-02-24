@@ -4,10 +4,10 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import Vuetify from 'vuetify'
-import 'vuetify/dist/vuetify.min.css'
 import 'material-design-icons/iconfont/material-icons.css'
 import store from './store/index.js'
-
+import 'dplayer/dist/DPlayer.min.css'
+import 'vuetify/dist/vuetify.min.css'
 Vue.use(Vuetify)
 Vue.config.productionTip = false
 
