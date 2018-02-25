@@ -29,24 +29,29 @@ const mainCotent = resolve => {
   });
 };
 
-const CourseInformation = resolve =>{
-  require.ensure(['@/page/main/courseInformation.vue'],()=>{
+const CourseInformation = resolve => {
+  require.ensure(['@/page/main/courseInformation.vue'], () => {
     resolve(require('@/page/main/courseInformation.vue'));
   })
 }
 
-const OnlineTest = resolve=>{
-  require.ensure(['@/page/main/onlineTest.vue'],()=>{
+const OnlineTest = resolve => {
+  require.ensure(['@/page/main/onlineTest.vue'], () => {
     resolve(require('@/page/main/onlineTest.vue'));
   })
 }
 
-const VideoPlay = resolve =>{
-  require.ensure(['@/page/main/videoPlay.vue'],()=>{
+const VideoPlay = resolve => {
+  require.ensure(['@/page/main/videoPlay.vue'], () => {
     resolve(require('@/page/main/videoPlay.vue'))
   })
 }
 
+const PersonCenter = resolve => {
+  require.ensure(['@/page/main/personCenter.vue'], () => {
+    resolve(require('@/page/main/personCenter.vue'))
+  })
+}
 
 
 //单独变量router是为了对路由进行拦截
@@ -59,37 +64,44 @@ const router = new Router({
       meta: {
         requiresAuth: true
       },
-      children:[
+      children: [
         {
-          path:'',
-          name:'mainCotent',
-          component:mainCotent,
+          path: '',
+          name: 'mainCotent',
+          component: mainCotent,
           meta: {
             requiresAuth: true
           }
-        },{
-          path:'course/:id',
-          name:'courseInformation',
-          component:CourseInformation,
+        }, {
+          path: 'course/:id',
+          name: 'courseInformation',
+          component: CourseInformation,
           meta: {
             requiresAuth: true
           }
-        },{
-          path:'onlineTest/:id',
-          name:'onlineTest',
-          component:OnlineTest,
+        }, {
+          path: 'onlineTest/:id',
+          name: 'onlineTest',
+          component: OnlineTest,
           meta: {
             requiresAuth: true
           }
-        },{
-          path:'videos/:id',
-          name:'videos',
-          component:VideoPlay,
+        }, {
+          path: 'videos/:id',
+          name: 'videos',
+          component: VideoPlay,
           meta: {
             requiresAuth: true
           }
-        },
-        
+        }, {
+          path: 'personCenter',
+          name: 'personCenter',
+          component: PersonCenter,
+          meta: {
+            requiresAuth: true
+          }
+        }
+
       ]
     }, {
       path: '/login',
@@ -104,24 +116,24 @@ const router = new Router({
 })
 
 //注册全局钩子来进行拦截
-router.beforeEach((to,from,next)=>{
+router.beforeEach((to, from, next) => {
   //获取store里面的token
   let token = store.state.token;
   //判断要去的路由有没有requiresAuth（此功能时验证首页）
-  if(to.meta.requiresAuth){
+  if (to.meta.requiresAuth) {
     // 是否有token，有即代表有登陆过，没有反之
     console.log(to.meta.requiresAuth)
-    if(token){
+    if (token) {
       //通过
       next();
-    }else{
+    } else {
       //没有登陆，转跳登陆界面
       next({
-        path:'/login',
-        query:{redirect:to.fullPath}
+        path: '/login',
+        query: { redirect: to.fullPath }
       })
     }
-  }else{
+  } else {
     // 不需要用验证，即该路由不需要用到token的验证，给与通过
     next();
   }

@@ -29,5 +29,13 @@ export default {
     // 查找视频资源通过ID
     getVideoById(params) {
         return api.post('/video/findVideo', params).then(res => res.data);
+    },
+    // 添加评论
+    addComment(params) {
+        return api.post('/comment/addComment', params).then(res => res.data);
+    },
+    // 查找评论
+    findAllComment(params) {
+        return api.post('/comment/findAllComment', params).then(res => res.data);
     }
 }

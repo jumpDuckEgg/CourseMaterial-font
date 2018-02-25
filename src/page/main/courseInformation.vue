@@ -43,7 +43,7 @@
                               </v-list-tile-content>
                               <v-list-tile-action>
                                 <v-tooltip bottom>
-                                  <v-btn icon ripple slot="activator">
+                                  <v-btn icon ripple slot="activator" @click="downLoad(item.courseware_url)">
                                     <v-icon color="indigo lighten-1">file_download</v-icon>
                                   </v-btn>
                                   <span>下载</span>
@@ -72,7 +72,7 @@
                               </v-list-tile-content>
                               <v-list-tile-action>
                                  <v-tooltip bottom>
-                                  <v-btn icon ripple slot="activator">
+                                  <v-btn icon ripple slot="activator" @click="downLoad(item.experiment_url)">
                                     <v-icon color="indigo lighten-1">file_download</v-icon>
                                   </v-btn>
                                   <span>下载</span>
@@ -210,6 +210,107 @@
         </v-card>
       </v-flex>
     </v-layout>
+    <v-layout>
+      <v-flex xs12 sm8 offset-sm2>
+                <div class="comment">
+
+            <div class="comment_title">评论</div>
+            <div class="comment_box">
+                <v-card>
+                    <v-layout row style="position: relative">
+                        <v-flex xs2 height="130px;">
+                            <v-card-media :src="this.$store.state.userImage" height="130px" contain></v-card-media>
+                        </v-flex>
+                        <v-flex xs10 style="height:130px;padding:0 10px;position: relative">
+                            <v-text-field label="说点什么吧..." v-model="description" multi-line rows="3" :rules="[(v) => v.length <= 100 || 'Max 100 characters']"></v-text-field>
+
+                            <!-- <div class="faceBox">
+                                <v-container fluid grid-list-xs>
+                                    <v-layout row wrap>
+                                        <v-flex xs3 style="text-align:center;padding:4px;">
+                                            <v-btn flat icon>😀</v-btn>
+                                        </v-flex>
+                                        <v-flex xs3 style="text-align:center;padding:4px;">
+                                            <v-btn flat icon>😀</v-btn>
+                                        </v-flex>
+                                        <v-flex xs3 style="text-align:center;padding:4px;">
+                                            <v-btn flat icon>😀</v-btn>
+                                        </v-flex>
+                                        <v-flex xs3 style="text-align:center;padding:4px;">
+                                            <v-btn flat icon>😀</v-btn>
+                                        </v-flex>
+                                        <v-flex xs3 style="text-align:center;padding:4px;">
+                                            <v-btn flat icon>😀</v-btn>
+                                        </v-flex>
+                                        <v-flex xs3 style="text-align:center;padding:4px;">
+                                            <v-btn flat icon>😀</v-btn>
+                                        </v-flex>
+                                        <v-flex xs3 style="text-align:center;padding:4px;">
+                                            <v-btn flat icon>😀</v-btn>
+                                        </v-flex>
+                                        <v-flex xs3 style="text-align:center;padding:4px;">
+                                            <v-btn flat icon>😀</v-btn>
+                                        </v-flex>
+                                    </v-layout>
+                                </v-container>
+                            </div> -->
+                            <v-menu offset-y>
+                                <v-btn dark small fab color="pink" slot="activator" absolute left bottom>
+                                    <v-icon>face</v-icon>
+                                </v-btn>
+                                <v-list>
+                                    <v-list-tile>
+                                        <v-list-tile-title>待定</v-list-tile-title>
+                                    </v-list-tile>
+                                </v-list>
+                            </v-menu>
+                        </v-flex>
+                        <v-btn absolute dark fab bottom right color="pink" @click="submitComment">
+                            <v-icon>send</v-icon>
+                        </v-btn>
+
+                    </v-layout>
+                </v-card>
+            </div>
+            <div class="comment_content">
+                <template v-if="comments.length == 0">
+                    <v-layout row>
+                        <v-flex>
+                                <v-divider></v-divider>
+                            <div class="no-content">
+                            <v-icon color="grey lighten-1">info</v-icon>暂无评论</div>
+                        </v-flex>
+                    </v-layout>
+                </template>
+                <template v-if="comments.length>0" >
+                    <v-layout row v-for="(item,index) in comments" :key="index">
+                        <v-flex xs2 style="text-align:center;margin:10px 0;">
+                            <v-avatar size="60px">
+                                <img :src="item.people_image" alt="John">
+                            </v-avatar>
+                        </v-flex>
+                        <v-flex xs10>
+                            <v-divider></v-divider>
+                            <div style="margin:10px 0;">
+                                <span>{{item.comment_people}}</span>😊●
+                                <span class="red--text">{{item.createdTime|formatDate}}</span>
+                            </div>
+                            <div style="margin:10px 0;">
+                                {{item.comment_content}}
+                            </div>
+
+                        </v-flex>
+                    </v-layout>
+                </template>
+                
+            </div>
+            <v-snackbar :timeout="timeout" top v-model="snackbar">
+                {{text}}
+                <v-btn flat color="pink" @click.native="snackbar = false">Close</v-btn>
+            </v-snackbar>
+        </div>
+      </v-flex>
+    </v-layout>
   </div>
 </template>
 
@@ -217,122 +318,186 @@
 import moment from "moment";
 import api from "../../util/api.js";
 export default {
-    name: "courseInformation",
-    data() {
-        return {
-            msg: "我是课程详情",
-            courseContent: {},
-            coursewares: [],
-            experiments: [],
-            tests: [],
-            videos: [],
-            homeworks: [],
-            onlineTests: [],
-            tabs: [
-                { name: "课件资源", key: "coursewares" },
-                { name: "实验资源", key: "experiments" },
-                { name: "模拟试题", key: "tests" },
-                { name: "视频资源", key: "videos" },
-                { name: "习题作业", key: "homeworks" },
-                { name: "在线测试", key: "onlineTests" }
-            ],
-            active: null,
-            text:
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-        };
+  name: "courseInformation",
+  data() {
+    return {
+      msg: "我是课程详情",
+      courseContent: {},
+      coursewares: [],
+      experiments: [],
+      tests: [],
+      videos: [],
+      homeworks: [],
+      onlineTests: [],
+      tabs: [
+        { name: "课件资源", key: "coursewares" },
+        { name: "实验资源", key: "experiments" },
+        { name: "模拟试题", key: "tests" },
+        { name: "视频资源", key: "videos" },
+        { name: "习题作业", key: "homeworks" },
+        { name: "在线测试", key: "onlineTests" }
+      ],
+      active:null,
+      description: "",
+      inset: true,
+      snackbar: false,
+      timeout: 2000,
+      text: "",
+      comments: []
+    };
+  },
+  methods: {
+    downLoad(url) {
+      window.open(url);
     },
-    methods: {
-        demo(url) {
-            window.open(url);
-        }
-    },
-    created() {
-        let data = {
-            params: {
-                course_id: this.$route.params.id
-            }
-        };
-        api.getCourseById(data).then(res => {
-            this.msg = res.data;
-            this.courseContent = res.data[0];
+    submitComment() {
+      if (!this.description.trim()) {
+        this.text = "内容不能为空";
+        this.snackbar = true;
+        return false;
+      }
+      let data = {
+        user_id: this.$store.state.user_id,
+        comment_content: this.description,
+        comment_type: "course",
+        type_id: this.$route.params.id,
+        comment_people: this.$store.state.username,
+        people_image: this.$store.state.userImage
+      };
+      api
+        .addComment(data)
+        .then(res => {
+          if (res.code == 20) {
+            this.description = "";
+            this.text = res.message;
+            this.snackbar = true;
+            let CommentData = {
+              comment_type: "course",
+              type_id: this.$route.params.id
+            };
+            return api.findAllComment(CommentData);
+          }
+        })
+        .then(res => {
+          if (res.code == 21) {
+            this.comments = res.data;
+          }
         });
-        let resourceData = {
-            query: {
-                course_id: this.$route.params.id
-            }
-        };
-        api.findAllResources(resourceData).then(res => {
-            if (res.code == 13) {
-                let result = res.data;
-                if (result.coursewares) {
-                    this.coursewares = result.coursewares;
-                } else {
-                    this.coursewares = [];
-                }
-                if (result.experiments) {
-                    this.experiments = result.experiments;
-                } else {
-                    this.experiments = [];
-                }
-                if (result.tests) {
-                    this.tests = result.tests;
-                } else {
-                    this.tests = [];
-                }
-                if (result.videos) {
-                    this.videos = result.videos;
-                } else {
-                    this.videos = [];
-                }
-                if (result.homeworks) {
-                    this.homeworks = result.homeworks;
-                } else {
-                    this.homeworks = [];
-                }
-            }
-        });
-
-        api.findOnlineTest(resourceData).then(res => {
-            if (res.code == 16) {
-                this.onlineTests = res.data;
-            }
-        });
-    },
-    filters: {
-        formatDate: function(value) {
-            return moment(value).format("MMMM Do YYYY");
-        }
     }
+  },
+  created() {
+    let data = {
+      params: {
+        course_id: this.$route.params.id
+      }
+    };
+    api.getCourseById(data).then(res => {
+      this.msg = res.data;
+      this.courseContent = res.data[0];
+    });
+    let resourceData = {
+      query: {
+        course_id: this.$route.params.id
+      }
+    };
+    api.findAllResources(resourceData).then(res => {
+      if (res.code == 13) {
+        let result = res.data;
+        if (result.coursewares) {
+          this.coursewares = result.coursewares;
+        } else {
+          this.coursewares = [];
+        }
+        if (result.experiments) {
+          this.experiments = result.experiments;
+        } else {
+          this.experiments = [];
+        }
+        if (result.tests) {
+          this.tests = result.tests;
+        } else {
+          this.tests = [];
+        }
+        if (result.videos) {
+          this.videos = result.videos;
+        } else {
+          this.videos = [];
+        }
+        if (result.homeworks) {
+          this.homeworks = result.homeworks;
+        } else {
+          this.homeworks = [];
+        }
+      }
+    });
+
+    api.findOnlineTest(resourceData).then(res => {
+      if (res.code == 16) {
+        this.onlineTests = res.data;
+      }
+    });
+    let CommentData = {
+      comment_type: "course",
+      type_id: this.$route.params.id
+    };
+    api.findAllComment(CommentData).then(res => {
+      if (res.code == 21) {
+        this.comments = res.data;
+      }
+    });
+  },
+  filters: {
+    formatDate: function(value) {
+      return moment(value).format("MMMM Do YYYY");
+    }
+  }
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang='scss'scoped>
 .courseInformation {
-    margin: 20px;
-    // width: 70%;
+  margin: 20px;
+  // width: 70%;
 }
 .course_title {
-    text-shadow: 5px 5px 5px black;
-    font-size: 3rem;
+  text-shadow: 5px 5px 5px black;
+  font-size: 3rem;
 }
 .course_author {
-    margin-top: 20px;
-    font-size: 1.5rem;
+  margin-top: 20px;
+  font-size: 1.5rem;
 }
 .course_text-shadow {
-    text-shadow: 2px 2px 2px rgb(153, 148, 148);
+  text-shadow: 2px 2px 2px rgb(153, 148, 148);
 }
 .course_createTime {
-    font-size: 1.2rem;
-    margin-top: 5px;
+  font-size: 1.2rem;
+  margin-top: 5px;
 }
 .course_description {
-    font-size: 1.2rem;
-    margin-top: 5px;
+  font-size: 1.2rem;
+  margin-top: 5px;
 }
 .no-content {
-    text-align: center;
-    margin-top: 50px;
+  text-align: center;
+  margin-top: 50px;
 }
+.comment_title {
+  margin: 10px 0;
+  font-size: 1.3rem;
+}
+.comment_box {
+  margin-bottom:40px;
+}
+.faceBox {
+  width: 220px;
+  background-color: white;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  position: absolute;
+  left: 60px;
+  top: 110px;
+}
+
 </style>

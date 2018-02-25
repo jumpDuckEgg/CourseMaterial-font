@@ -8,7 +8,7 @@
       <v-toolbar-title class="white--text">网络应用技术资源库</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-tooltip bottom>
-        <v-avatar slot="activator">
+        <v-avatar slot="activator" @click="toPersonCenter">
           <img :src="this.$store.state.userImage" alt="logo">
         </v-avatar>
         <span>{{this.$store.state.username}}</span>
@@ -35,35 +35,38 @@
 
 <script>
 export default {
-    name: "mainPage",
-    data: () => ({
-        footerFlag: true,
-        snackbar: false,
-        remainInfo: "",
-        snackbarFlag: true,
-        snackbarTimeOut: 5000
-    }),
-    methods: {
-        logout() {
-            this.$store.dispatch("UserLogout");
-            if (!this.$store.state.token) {
-                this.$router.push("/login");
-                this.remainInfo = "登出成功";
-                this.snackbar = false;
-            } else {
-                this.remainInfo = "登出失败";
-                this.snackbar = false;
-            }
-        }
+  name: "mainPage",
+  data: () => ({
+    footerFlag: true,
+    snackbar: false,
+    remainInfo: "",
+    snackbarFlag: true,
+    snackbarTimeOut: 5000
+  }),
+  methods: {
+    logout() {
+      this.$store.dispatch("UserLogout");
+      if (!this.$store.state.token) {
+        this.$router.push("/login");
+        this.remainInfo = "登出成功";
+        this.snackbar = false;
+      } else {
+        this.remainInfo = "登出失败";
+        this.snackbar = false;
+      }
+    },
+    toPersonCenter() {
+      this.$router.push("/personCenter");
     }
+  }
 };
 </script>
 
 <style lang="scss" scoped>
 .main {
-    margin: auto;
-    border: 1px solid black;
-    // width: 1200px;
-    margin-bottom: 55px;
+  margin: auto;
+  border: 1px solid black;
+  // width: 1200px;
+  margin-bottom: 55px;
 }
 </style>

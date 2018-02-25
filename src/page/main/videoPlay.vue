@@ -65,27 +65,39 @@
                 </v-card>
             </div>
             <div class="comment_content">
-                <v-layout row>
-                    <v-flex xs2 style="text-align:center;margin:10px 0;">
-                        <v-avatar size="60px">
-                            <img :src="this.$store.state.userImage" alt="John">
-                        </v-avatar>
-                    </v-flex>
-                    <v-flex xs10>
-                        <v-divider></v-divider>
-                        <div style="margin:10px 0;">
-                            <span>用户名</span>😊●
-                            <span class="red--text">两个月前</span>
-                        </div>
-                        <div style="margin:10px 0;">
-                            这样就方便多了
-                        </div>
+                <template v-if="comments.length == 0">
+                    <v-layout row>
+                        <v-flex>
+                                <v-divider></v-divider>
+                            <div class="no-content">
+                            <v-icon color="grey lighten-1">info</v-icon>暂无评论</div>
+                        </v-flex>
+                    </v-layout>
+                </template>
+                <template v-if="comments.length>0" >
+                    <v-layout row v-for="(item,index) in comments" :key="index">
+                        <v-flex xs2 style="text-align:center;margin:10px 0;">
+                            <v-avatar size="60px">
+                                <img :src="item.people_image" alt="John">
+                            </v-avatar>
+                        </v-flex>
+                        <v-flex xs10>
+                            <v-divider></v-divider>
+                            <div style="margin:10px 0;">
+                                <span>{{item.comment_people}}</span>😊●
+                                <span class="red--text">{{item.createdTime|formatDate}}</span>
+                            </div>
+                            <div style="margin:10px 0;">
+                                {{item.comment_content}}
+                            </div>
 
-                    </v-flex>
-                </v-layout>
+                        </v-flex>
+                    </v-layout>
+                </template>
+                
             </div>
             <v-snackbar :timeout="timeout" top v-model="snackbar">
-                内容不能为空
+                {{text}}
                 <v-btn flat color="pink" @click.native="snackbar = false">Close</v-btn>
             </v-snackbar>
         </div>
@@ -93,75 +105,124 @@
 </template>
 
 <script>
+import moment from "moment";
 import DPlayer from "dplayer";
 import api from "../../util/api.js";
 export default {
-    name: "videoPlay",
-    data() {
-        return {
-            title: "视频播放页",
-            videoContent: {},
-            description: "",
-            inset: true,
-            snackbar:false,
-            timeout:2000
-        };
-    },
-    created() {
-        let data = {
-            video_id: this.$route.params.id
-        };
-        api.getVideoById(data).then(res => {
-            if (res.code == 19) {
-                this.title = res.data.video_name;
-                this.videoContent = res.data;
-                let dplayer = this.$refs.dplayer;
-                let dp = new DPlayer({
-                    container: dplayer,
-                    screenshot: true,
-                    video: {
-                        url: this.videoContent.video_url
-                    }
-                    // 弹幕格式为数组嵌套，可以看控制台进行查看
-                    // danmaku: {
-                    //     id: "demo",
-                    //     api: "https://api.prprpr.me/dplayer/"
-                    // }
-                });
-            }
+  name: "videoPlay",
+  data() {
+    return {
+      title: "视频播放页",
+      videoContent: {},
+      description: "",
+      inset: true,
+      snackbar: false,
+      timeout: 2000,
+      text: "",
+      comments: []
+    };
+  },
+  created() {
+    let data = {
+      video_id: this.$route.params.id
+    };
+    api.getVideoById(data).then(res => {
+      if (res.code == 19) {
+        this.title = res.data.video_name;
+        this.videoContent = res.data;
+        let dplayer = this.$refs.dplayer;
+        let dp = new DPlayer({
+          container: dplayer,
+          screenshot: true,
+          video: {
+            url: this.videoContent.video_url
+          }
+          // 弹幕格式为数组嵌套，可以看控制台进行查看
+          // danmaku: {
+          //     id: "demo",
+          //     api: "https://api.prprpr.me/dplayer/"
+          // }
         });
-    },
-    methods: {
-        submitComment() {
-            if (!this.description.trim()) {
-                this.snackbar = true;
-                return false;
-            }
-        }
+      }
+    });
+    let CommentData = {
+      comment_type: "videos",
+      type_id: this.$route.params.id
+    };
+    api.findAllComment(CommentData).then(res => {
+      if (res.code == 21) {
+        this.comments = res.data;
+      }
+    });
+  },
+  methods: {
+    submitComment() {
+      if (!this.description.trim()) {
+        this.text = "内容不能为空";
+        this.snackbar = true;
+        return false;
+      }
+      let data = {
+        user_id: this.$store.state.user_id,
+        comment_content: this.description,
+        comment_type: "videos",
+        type_id: this.$route.params.id,
+        comment_people: this.$store.state.username,
+        people_image: this.$store.state.userImage
+      };
+      api
+        .addComment(data)
+        .then(res => {
+          if (res.code == 20) {
+            this.description = "";
+            this.text = res.message;
+            this.snackbar = true;
+            let CommentData = {
+              comment_type: "videos",
+              type_id: this.$route.params.id
+            };
+            return api.findAllComment(CommentData);
+          }
+        })
+        .then(res => {
+          if (res.code == 21) {
+            this.comments = res.data;
+          }
+        });
     }
+  },
+  filters: {
+    formatDate: function(value) {
+      return moment(value).format("MMMM Do YYYY");
+    }
+  }
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang='scss'scoped>
 .videoPlay {
-    width: 60%;
-    margin: 10px auto;
+  width: 60%;
+  margin: 10px auto;
 }
 .comment_title {
-    margin: 10px 0;
-    font-size: 1.2rem;
+  margin: 10px 0;
+  font-size: 1.3rem;
 }
 .comment_box {
-    margin: 40px 0;
+  margin-bottom:40px;
 }
 .faceBox {
-    width: 220px;
-    background-color: white;
-    border: 1px solid #eee;
-    border-radius: 10px;
-    position: absolute;
-    left: 60px;
-    top: 110px;
+  width: 220px;
+  background-color: white;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  position: absolute;
+  left: 60px;
+  top: 110px;
+}
+.no-content {
+  text-align: center;
+  margin: 20px 0;
 }
 </style>
