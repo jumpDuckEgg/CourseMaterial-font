@@ -37,5 +37,17 @@ export default {
     // 查找评论
     findAllComment(params) {
         return api.post('/comment/findAllComment', params).then(res => res.data);
+    },
+    // 获取用户信息
+    getUserById(params) {
+        return api.post('/user/getUserInformation', params).then(res => res.data);
+    },
+    //获取上传token
+    getUploadToken(params) {
+        return api.post('/uploadtoken', params).then(res => res.data);
+    },
+    // 修改用户信息
+    modifyUser(params) {
+        return api.post('/user/updateUserInformation', params).then(res => res.data);
     }
 }

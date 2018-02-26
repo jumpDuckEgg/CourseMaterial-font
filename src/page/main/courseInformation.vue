@@ -71,7 +71,7 @@
                                 <v-list-tile-sub-title>{{ item.createdTime |formatDate }}</v-list-tile-sub-title>
                               </v-list-tile-content>
                               <v-list-tile-action>
-                                 <v-tooltip bottom>
+                                <v-tooltip bottom>
                                   <v-btn icon ripple slot="activator" @click="downLoad(item.experiment_url)">
                                     <v-icon color="indigo lighten-1">file_download</v-icon>
                                   </v-btn>
@@ -165,14 +165,14 @@
                         </v-list>
                       </template>
                       <template v-if="item.key=='onlineTests'">
-                        <template v-if="onlineTests.length == 0">
+                        <template v-if="checkFlag(onlineTests,'onlineTest')">
                           <div class="no-content">
                             <v-icon color="grey lighten-1">info</v-icon>暂无此资源</div>
                         </template>
                         <!-- {{onlineTests}} -->
                         <v-list two-line>
                           <template v-for="(item,index) in onlineTests">
-                            <v-list-tile avatar :key="item.onlineTest_id" :to='"/onlineTest/"+item.onlineTest_id'>
+                            <v-list-tile avatar :key="item.onlineTest_id" :to='"/onlineTest/"+item.onlineTest_id' v-if="item.onlineTest_publish">
                               <v-list-tile-avatar>
                                 <v-icon large color="blue  darken-2">assessment</v-icon>
                               </v-list-tile-avatar>
@@ -212,19 +212,19 @@
     </v-layout>
     <v-layout>
       <v-flex xs12 sm8 offset-sm2>
-                <div class="comment">
+        <div class="comment">
 
-            <div class="comment_title">评论</div>
-            <div class="comment_box">
-                <v-card>
-                    <v-layout row style="position: relative">
-                        <v-flex xs2 height="130px;">
-                            <v-card-media :src="this.$store.state.userImage" height="130px" contain></v-card-media>
-                        </v-flex>
-                        <v-flex xs10 style="height:130px;padding:0 10px;position: relative">
-                            <v-text-field label="说点什么吧..." v-model="description" multi-line rows="3" :rules="[(v) => v.length <= 100 || 'Max 100 characters']"></v-text-field>
+          <div class="comment_title">评论</div>
+          <div class="comment_box">
+            <v-card>
+              <v-layout row style="position: relative">
+                <v-flex xs2 height="130px;">
+                  <v-card-media :src="this.$store.state.userImage" height="130px" contain></v-card-media>
+                </v-flex>
+                <v-flex xs10 style="height:130px;padding:0 10px;position: relative">
+                  <v-text-field label="说点什么吧..." v-model="description" multi-line rows="3" :rules="[(v) => v.length <= 100 || 'Max 100 characters']"></v-text-field>
 
-                            <!-- <div class="faceBox">
+                  <!-- <div class="faceBox">
                                 <v-container fluid grid-list-xs>
                                     <v-layout row wrap>
                                         <v-flex xs3 style="text-align:center;padding:4px;">
@@ -254,60 +254,60 @@
                                     </v-layout>
                                 </v-container>
                             </div> -->
-                            <v-menu offset-y>
-                                <v-btn dark small fab color="pink" slot="activator" absolute left bottom>
-                                    <v-icon>face</v-icon>
-                                </v-btn>
-                                <v-list>
-                                    <v-list-tile>
-                                        <v-list-tile-title>待定</v-list-tile-title>
-                                    </v-list-tile>
-                                </v-list>
-                            </v-menu>
-                        </v-flex>
-                        <v-btn absolute dark fab bottom right color="pink" @click="submitComment">
-                            <v-icon>send</v-icon>
-                        </v-btn>
+                  <v-menu offset-y>
+                    <v-btn dark small fab color="pink" slot="activator" absolute left bottom>
+                      <v-icon>face</v-icon>
+                    </v-btn>
+                    <v-list>
+                      <v-list-tile>
+                        <v-list-tile-title>待定</v-list-tile-title>
+                      </v-list-tile>
+                    </v-list>
+                  </v-menu>
+                </v-flex>
+                <v-btn absolute dark fab bottom right color="pink" @click="submitComment">
+                  <v-icon>send</v-icon>
+                </v-btn>
 
-                    </v-layout>
-                </v-card>
-            </div>
-            <div class="comment_content">
-                <template v-if="comments.length == 0">
-                    <v-layout row>
-                        <v-flex>
-                                <v-divider></v-divider>
-                            <div class="no-content">
-                            <v-icon color="grey lighten-1">info</v-icon>暂无评论</div>
-                        </v-flex>
-                    </v-layout>
-                </template>
-                <template v-if="comments.length>0" >
-                    <v-layout row v-for="(item,index) in comments" :key="index">
-                        <v-flex xs2 style="text-align:center;margin:10px 0;">
-                            <v-avatar size="60px">
-                                <img :src="item.people_image" alt="John">
-                            </v-avatar>
-                        </v-flex>
-                        <v-flex xs10>
-                            <v-divider></v-divider>
-                            <div style="margin:10px 0;">
-                                <span>{{item.comment_people}}</span>😊●
-                                <span class="red--text">{{item.createdTime|formatDate}}</span>
-                            </div>
-                            <div style="margin:10px 0;">
-                                {{item.comment_content}}
-                            </div>
+              </v-layout>
+            </v-card>
+          </div>
+          <div class="comment_content">
+            <template v-if="checkFlag(comments,'comment')">
+              <v-layout row>
+                <v-flex>
+                  <v-divider></v-divider>
+                  <div class="no-content">
+                    <v-icon color="grey lighten-1">info</v-icon>暂无评论</div>
+                </v-flex>
+              </v-layout>
+            </template>
+            <template v-if="comments.length>0">
+              <v-layout row v-for="(item,index) in comments" :key="index" v-if="item.isPublish">
+                <v-flex xs2 style="text-align:center;margin:10px 0;">
+                  <v-avatar size="60px">
+                    <img :src="item.people_image" alt="John">
+                  </v-avatar>
+                </v-flex>
+                <v-flex xs10>
+                  <v-divider></v-divider>
+                  <div style="margin:10px 0;">
+                    <span>{{item.comment_people}}</span>😊●
+                    <span class="red--text">{{item.createdTime|formatDate}}</span>
+                  </div>
+                  <div style="margin:10px 0;">
+                    {{item.comment_content}}
+                  </div>
 
-                        </v-flex>
-                    </v-layout>
-                </template>
-                
-            </div>
-            <v-snackbar :timeout="timeout" top v-model="snackbar">
-                {{text}}
-                <v-btn flat color="pink" @click.native="snackbar = false">Close</v-btn>
-            </v-snackbar>
+                </v-flex>
+              </v-layout>
+            </template>
+
+          </div>
+          <v-snackbar :timeout="timeout" top v-model="snackbar">
+            {{text}}
+            <v-btn flat color="pink" @click.native="snackbar = false">Close</v-btn>
+          </v-snackbar>
         </div>
       </v-flex>
     </v-layout>
@@ -318,186 +318,209 @@
 import moment from "moment";
 import api from "../../util/api.js";
 export default {
-  name: "courseInformation",
-  data() {
-    return {
-      msg: "我是课程详情",
-      courseContent: {},
-      coursewares: [],
-      experiments: [],
-      tests: [],
-      videos: [],
-      homeworks: [],
-      onlineTests: [],
-      tabs: [
-        { name: "课件资源", key: "coursewares" },
-        { name: "实验资源", key: "experiments" },
-        { name: "模拟试题", key: "tests" },
-        { name: "视频资源", key: "videos" },
-        { name: "习题作业", key: "homeworks" },
-        { name: "在线测试", key: "onlineTests" }
-      ],
-      active:null,
-      description: "",
-      inset: true,
-      snackbar: false,
-      timeout: 2000,
-      text: "",
-      comments: []
-    };
-  },
-  methods: {
-    downLoad(url) {
-      window.open(url);
+    name: "courseInformation",
+    data() {
+        return {
+            msg: "我是课程详情",
+            courseContent: {},
+            coursewares: [],
+            experiments: [],
+            tests: [],
+            videos: [],
+            homeworks: [],
+            onlineTests: [],
+            tabs: [
+                { name: "课件资源", key: "coursewares" },
+                { name: "实验资源", key: "experiments" },
+                { name: "模拟试题", key: "tests" },
+                { name: "视频资源", key: "videos" },
+                { name: "习题作业", key: "homeworks" },
+                { name: "在线测试", key: "onlineTests" }
+            ],
+            active: null,
+            description: "",
+            inset: true,
+            snackbar: false,
+            timeout: 2000,
+            text: "",
+            comments: []
+        };
     },
-    submitComment() {
-      if (!this.description.trim()) {
-        this.text = "内容不能为空";
-        this.snackbar = true;
-        return false;
-      }
-      let data = {
-        user_id: this.$store.state.user_id,
-        comment_content: this.description,
-        comment_type: "course",
-        type_id: this.$route.params.id,
-        comment_people: this.$store.state.username,
-        people_image: this.$store.state.userImage
-      };
-      api
-        .addComment(data)
-        .then(res => {
-          if (res.code == 20) {
-            this.description = "";
-            this.text = res.message;
-            this.snackbar = true;
-            let CommentData = {
-              comment_type: "course",
-              type_id: this.$route.params.id
+    methods: {
+        checkFlag(data, type) {
+            let flag = 0;
+            if (data.length > 0) {
+                data.forEach(element => {
+                    if (type == "onlineTest") {
+                        if (!element.onlineTest_publish) {
+                            flag++;
+                        }
+                    }
+                    if (type == "comment") {
+                        if (!element.isPublish) {
+                            flag++;
+                        }
+                    }
+                });
+                if (flag == data.length) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return true;
+            }
+        },
+        downLoad(url) {
+            window.open(url);
+        },
+        submitComment() {
+            if (!this.description.trim()) {
+                this.text = "内容不能为空";
+                this.snackbar = true;
+                return false;
+            }
+            let data = {
+                user_id: this.$store.state.user_id,
+                comment_content: this.description,
+                comment_type: "course",
+                type_id: this.$route.params.id,
+                comment_people: this.$store.state.username,
+                people_image: this.$store.state.userImage
             };
-            return api.findAllComment(CommentData);
-          }
-        })
-        .then(res => {
-          if (res.code == 21) {
-            this.comments = res.data;
-          }
+            api
+                .addComment(data)
+                .then(res => {
+                    if (res.code == 20) {
+                        this.description = "";
+                        this.text = res.message;
+                        this.snackbar = true;
+                        let CommentData = {
+                            comment_type: "course",
+                            type_id: this.$route.params.id
+                        };
+                        return api.findAllComment(CommentData);
+                    }
+                })
+                .then(res => {
+                    if (res.code == 21) {
+                        this.comments = res.data;
+                    }
+                });
+        }
+    },
+    created() {
+        let data = {
+            params: {
+                course_id: this.$route.params.id
+            }
+        };
+        api.getCourseById(data).then(res => {
+            this.msg = res.data;
+            this.courseContent = res.data[0];
         });
-    }
-  },
-  created() {
-    let data = {
-      params: {
-        course_id: this.$route.params.id
-      }
-    };
-    api.getCourseById(data).then(res => {
-      this.msg = res.data;
-      this.courseContent = res.data[0];
-    });
-    let resourceData = {
-      query: {
-        course_id: this.$route.params.id
-      }
-    };
-    api.findAllResources(resourceData).then(res => {
-      if (res.code == 13) {
-        let result = res.data;
-        if (result.coursewares) {
-          this.coursewares = result.coursewares;
-        } else {
-          this.coursewares = [];
-        }
-        if (result.experiments) {
-          this.experiments = result.experiments;
-        } else {
-          this.experiments = [];
-        }
-        if (result.tests) {
-          this.tests = result.tests;
-        } else {
-          this.tests = [];
-        }
-        if (result.videos) {
-          this.videos = result.videos;
-        } else {
-          this.videos = [];
-        }
-        if (result.homeworks) {
-          this.homeworks = result.homeworks;
-        } else {
-          this.homeworks = [];
-        }
-      }
-    });
+        let resourceData = {
+            query: {
+                course_id: this.$route.params.id
+            }
+        };
+        api.findAllResources(resourceData).then(res => {
+            if (res.code == 13) {
+                let result = res.data;
+                if (result.coursewares) {
+                    this.coursewares = result.coursewares;
+                } else {
+                    this.coursewares = [];
+                }
+                if (result.experiments) {
+                    this.experiments = result.experiments;
+                } else {
+                    this.experiments = [];
+                }
+                if (result.tests) {
+                    this.tests = result.tests;
+                } else {
+                    this.tests = [];
+                }
+                if (result.videos) {
+                    this.videos = result.videos;
+                } else {
+                    this.videos = [];
+                }
+                if (result.homeworks) {
+                    this.homeworks = result.homeworks;
+                } else {
+                    this.homeworks = [];
+                }
+            }
+        });
 
-    api.findOnlineTest(resourceData).then(res => {
-      if (res.code == 16) {
-        this.onlineTests = res.data;
-      }
-    });
-    let CommentData = {
-      comment_type: "course",
-      type_id: this.$route.params.id
-    };
-    api.findAllComment(CommentData).then(res => {
-      if (res.code == 21) {
-        this.comments = res.data;
-      }
-    });
-  },
-  filters: {
-    formatDate: function(value) {
-      return moment(value).format("MMMM Do YYYY");
+        api.findOnlineTest(resourceData).then(res => {
+            if (res.code == 16) {
+                this.onlineTests = res.data;
+            }
+        });
+        let CommentData = {
+            comment_type: "course",
+            type_id: this.$route.params.id
+        };
+        api.findAllComment(CommentData).then(res => {
+            if (res.code == 21) {
+                this.comments = res.data;
+            }
+        });
+    },
+    filters: {
+        formatDate: function(value) {
+            return moment(value).format("MMMM Do YYYY");
+        }
     }
-  }
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang='scss'scoped>
 .courseInformation {
-  margin: 20px;
-  // width: 70%;
+    margin: 20px;
+    // width: 70%;
 }
 .course_title {
-  text-shadow: 5px 5px 5px black;
-  font-size: 3rem;
+    text-shadow: 5px 5px 5px black;
+    font-size: 3rem;
 }
 .course_author {
-  margin-top: 20px;
-  font-size: 1.5rem;
+    margin-top: 20px;
+    font-size: 1.5rem;
 }
 .course_text-shadow {
-  text-shadow: 2px 2px 2px rgb(153, 148, 148);
+    text-shadow: 2px 2px 2px rgb(153, 148, 148);
 }
 .course_createTime {
-  font-size: 1.2rem;
-  margin-top: 5px;
+    font-size: 1.2rem;
+    margin-top: 5px;
 }
 .course_description {
-  font-size: 1.2rem;
-  margin-top: 5px;
+    font-size: 1.2rem;
+    margin-top: 5px;
 }
 .no-content {
-  text-align: center;
-  margin-top: 50px;
+    text-align: center;
+    margin-top: 50px;
 }
 .comment_title {
-  margin: 10px 0;
-  font-size: 1.3rem;
+    margin: 10px 0;
+    font-size: 1.3rem;
 }
 .comment_box {
-  margin-bottom:40px;
+    margin-bottom: 40px;
 }
 .faceBox {
-  width: 220px;
-  background-color: white;
-  border: 1px solid #eee;
-  border-radius: 10px;
-  position: absolute;
-  left: 60px;
-  top: 110px;
+    width: 220px;
+    background-color: white;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    position: absolute;
+    left: 60px;
+    top: 110px;
 }
-
 </style>

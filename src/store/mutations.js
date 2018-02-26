@@ -24,6 +24,10 @@ const mutations = {
         window.sessionStorage.removeItem('userImage');
         window.sessionStorage.removeItem('username');
         window.sessionStorage.removeItem('user_id');
+    },
+    [types.UPDATELOGO]: (state, data) => {
+        state.userImage = data.userImage;
+        window.sessionStorage.setItem('userImage', data.userImage);
     }
 };
 

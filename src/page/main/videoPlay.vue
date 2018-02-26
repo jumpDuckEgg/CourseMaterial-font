@@ -168,7 +168,7 @@ export default {
         comment_type: "videos",
         type_id: this.$route.params.id,
         comment_people: this.$store.state.username,
-        people_image: this.$store.state.userImage
+        people_image: this.$store.state.userImage,
       };
       api
         .addComment(data)

@@ -95,7 +95,7 @@ export default {
                         this.remainInfo = data.message;
                         this.snackbar = true;
                         let userData = result.data;
-                        
+
                         this.$store.dispatch("UserLogin", userData);
                         let redirectUrl = decodeURIComponent(
                             this.$route.query.redirect || "/"
