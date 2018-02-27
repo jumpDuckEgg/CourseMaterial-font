@@ -53,6 +53,11 @@ const PersonCenter = resolve => {
   })
 }
 
+const PdfView = resolve => {
+  require.ensure(['@/page/main/pdfView.vue'], () => {
+    resolve(require('@/page/main/pdfView.vue'));
+  })
+}
 
 //单独变量router是为了对路由进行拦截
 const router = new Router({
@@ -97,6 +102,13 @@ const router = new Router({
           path: 'personCenter',
           name: 'personCenter',
           component: PersonCenter,
+          meta: {
+            requiresAuth: true
+          }
+        },{
+          path:'pdfView/:type/:id',
+          name:'pdfView',
+          component: PdfView,
           meta: {
             requiresAuth: true
           }

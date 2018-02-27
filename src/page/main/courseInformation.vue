@@ -12,6 +12,9 @@
                   <div class="course_author course_text-shadow">作者：{{courseContent.author}}</div>
                   <div class="course_createTime course_text-shadow">创建时间：{{courseContent.createdTime|formatDate}}</div>
                   <div class="course_description course_text-shadow">描述：{{courseContent.description}}</div>
+                  <v-btn absolute dark fab right color="pink">
+                    <v-icon>favorite</v-icon>
+                  </v-btn>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -77,6 +80,12 @@
                                   </v-btn>
                                   <span>下载</span>
                                 </v-tooltip>
+                                <v-tooltip bottom v-if="checkPDF(item.experiment_name)">
+                                  <v-btn icon ripple slot="activator" :to='"/pdfView/"+"experiment/"+item.experiment_id'>
+                                    <v-icon color="indigo lighten-1">pageview</v-icon>
+                                  </v-btn>
+                                  <span>在线查看</span>
+                                </v-tooltip>
                               </v-list-tile-action>
                             </v-list-tile>
                             <v-divider v-if="index + 1 < experiments.length" :key="`divider-${index}`"></v-divider>
@@ -100,9 +109,18 @@
                                 <v-list-tile-sub-title>{{ item.createdTime |formatDate }}</v-list-tile-sub-title>
                               </v-list-tile-content>
                               <v-list-tile-action>
-                                <v-btn icon ripple>
-                                  <v-icon color="grey lighten-1">info</v-icon>
-                                </v-btn>
+                                <v-tooltip bottom>
+                                  <v-btn icon ripple slot="activator" @click="downLoad(item.test_url)">
+                                    <v-icon color="indigo lighten-1">file_download</v-icon>
+                                  </v-btn>
+                                  <span>下载</span>
+                                </v-tooltip>
+                                <v-tooltip bottom v-if="checkPDF(item.test_name)">
+                                  <v-btn icon ripple slot="activator" :to='"/pdfView/"+"test/"+item.test_id'>
+                                    <v-icon color="indigo lighten-1">pageview</v-icon>
+                                  </v-btn>
+                                  <span>在线查看</span>
+                                </v-tooltip>
                               </v-list-tile-action>
                             </v-list-tile>
                             <v-divider v-if="index + 1 < tests.length" :key="`divider-${index}`"></v-divider>
@@ -117,7 +135,7 @@
                         <!-- {{videos}} -->
                         <v-list two-line>
                           <template v-for="(item,index) in videos">
-                            <v-list-tile avatar :key="item.video_id" :to='"/videos/"+item.video_id'>
+                            <v-list-tile avatar :key="item.video_id">
                               <v-list-tile-avatar>
                                 <v-icon large color="blue  darken-2">ondemand_video</v-icon>
                               </v-list-tile-avatar>
@@ -127,7 +145,7 @@
                               </v-list-tile-content>
                               <v-list-tile-action>
                                 <v-tooltip bottom>
-                                  <v-btn icon ripple slot="activator">
+                                  <v-btn icon ripple slot="activator" :to='"/videos/"+item.video_id'>
                                     <v-icon color="grey lighten-1">play_circle_outline</v-icon>
                                   </v-btn>
                                   <span>在线播放</span>
@@ -155,9 +173,18 @@
                                 <v-list-tile-sub-title>{{ item.createdTime |formatDate }}</v-list-tile-sub-title>
                               </v-list-tile-content>
                               <v-list-tile-action>
-                                <v-btn icon ripple>
-                                  <v-icon color="grey lighten-1">info</v-icon>
-                                </v-btn>
+                                <v-tooltip bottom>
+                                  <v-btn icon ripple slot="activator" @click="downLoad(item.homework_url)">
+                                    <v-icon color="indigo lighten-1">file_download</v-icon>
+                                  </v-btn>
+                                  <span>下载</span>
+                                </v-tooltip>
+                                <v-tooltip bottom v-if="checkPDF(item.homework_name)">
+                                  <v-btn icon ripple slot="activator" :to='"/pdfView/"+"homework/"+item.homework_id'>
+                                    <v-icon color="indigo lighten-1">pageview</v-icon>
+                                  </v-btn>
+                                  <span>在线查看</span>
+                                </v-tooltip>
                               </v-list-tile-action>
                             </v-list-tile>
                             <v-divider v-if="index + 1 < homeworks.length" :key="`divider-${index}`"></v-divider>
@@ -224,36 +251,6 @@
                 <v-flex xs10 style="height:130px;padding:0 10px;position: relative">
                   <v-text-field label="说点什么吧..." v-model="description" multi-line rows="3" :rules="[(v) => v.length <= 100 || 'Max 100 characters']"></v-text-field>
 
-                  <!-- <div class="faceBox">
-                                <v-container fluid grid-list-xs>
-                                    <v-layout row wrap>
-                                        <v-flex xs3 style="text-align:center;padding:4px;">
-                                            <v-btn flat icon>😀</v-btn>
-                                        </v-flex>
-                                        <v-flex xs3 style="text-align:center;padding:4px;">
-                                            <v-btn flat icon>😀</v-btn>
-                                        </v-flex>
-                                        <v-flex xs3 style="text-align:center;padding:4px;">
-                                            <v-btn flat icon>😀</v-btn>
-                                        </v-flex>
-                                        <v-flex xs3 style="text-align:center;padding:4px;">
-                                            <v-btn flat icon>😀</v-btn>
-                                        </v-flex>
-                                        <v-flex xs3 style="text-align:center;padding:4px;">
-                                            <v-btn flat icon>😀</v-btn>
-                                        </v-flex>
-                                        <v-flex xs3 style="text-align:center;padding:4px;">
-                                            <v-btn flat icon>😀</v-btn>
-                                        </v-flex>
-                                        <v-flex xs3 style="text-align:center;padding:4px;">
-                                            <v-btn flat icon>😀</v-btn>
-                                        </v-flex>
-                                        <v-flex xs3 style="text-align:center;padding:4px;">
-                                            <v-btn flat icon>😀</v-btn>
-                                        </v-flex>
-                                    </v-layout>
-                                </v-container>
-                            </div> -->
                   <v-menu offset-y>
                     <v-btn dark small fab color="pink" slot="activator" absolute left bottom>
                       <v-icon>face</v-icon>
@@ -265,10 +262,12 @@
                     </v-list>
                   </v-menu>
                 </v-flex>
-                <v-btn absolute dark fab bottom right color="pink" @click="submitComment">
-                  <v-icon>send</v-icon>
-                </v-btn>
-
+                <v-tooltip bottom>
+                  <v-btn absolute dark fab bottom right color="blue" @click="submitComment" slot="activator">
+                    <v-icon>send</v-icon>
+                  </v-btn>
+                  <span>提交评论</span>
+                </v-tooltip>
               </v-layout>
             </v-card>
           </div>
@@ -316,6 +315,7 @@
 
 <script>
 import moment from "moment";
+import _ from "lodash";
 import api from "../../util/api.js";
 export default {
     name: "courseInformation",
@@ -347,6 +347,15 @@ export default {
         };
     },
     methods: {
+        // 获取文件最后的文件类型是否为pdf
+        checkPDF(fileName) {
+            let suffix = _.last(_.split(fileName, "."));
+            if (suffix == "pdf") {
+                return true;
+            }
+            return false;
+        },
+
         checkFlag(data, type) {
             let flag = 0;
             if (data.length > 0) {
@@ -372,7 +381,8 @@ export default {
             }
         },
         downLoad(url) {
-            window.open(url);
+            // window.open(url);
+            window.location.href = url;
         },
         submitComment() {
             if (!this.description.trim()) {
@@ -513,14 +523,5 @@ export default {
 }
 .comment_box {
     margin-bottom: 40px;
-}
-.faceBox {
-    width: 220px;
-    background-color: white;
-    border: 1px solid #eee;
-    border-radius: 10px;
-    position: absolute;
-    left: 60px;
-    top: 110px;
 }
 </style>

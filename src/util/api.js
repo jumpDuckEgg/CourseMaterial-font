@@ -49,5 +49,25 @@ export default {
     // 修改用户信息
     modifyUser(params) {
         return api.post('/user/updateUserInformation', params).then(res => res.data);
-    }
+    },
+    // 获取实验资料通过ID
+    getExperimentById(params) {
+        return api.post('/experiment/getExperimentById', params).then(res => res.data);
+    },
+    // 获取习题作业通过ID
+    getHomeworkById(params) {
+        return api.post('/homowerk/getHomeworkById', params).then(res => res.data);
+    },
+    // 获取模拟试题通过ID
+    getTestById(params) {
+        return api.post('/test/getTestById', params).then(res => res.data);
+    },
+    // 添加收藏
+    collectionCourse(params) {
+        return api.post('/user/favoriteCourse', params).then(res => res.data);
+    },
+    // 取消收藏
+    cancelCollectionCourse(params) {
+        return api.post('/user/unfavoriteCourse', params).then(res => res.data);
+    },
 }

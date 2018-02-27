@@ -15,37 +15,6 @@
                         </v-flex>
                         <v-flex xs10 style="height:130px;padding:0 10px;position: relative">
                             <v-text-field label="说点什么吧..." v-model="description" multi-line rows="3" :rules="[(v) => v.length <= 100 || 'Max 100 characters']"></v-text-field>
-
-                            <!-- <div class="faceBox">
-                                <v-container fluid grid-list-xs>
-                                    <v-layout row wrap>
-                                        <v-flex xs3 style="text-align:center;padding:4px;">
-                                            <v-btn flat icon>😀</v-btn>
-                                        </v-flex>
-                                        <v-flex xs3 style="text-align:center;padding:4px;">
-                                            <v-btn flat icon>😀</v-btn>
-                                        </v-flex>
-                                        <v-flex xs3 style="text-align:center;padding:4px;">
-                                            <v-btn flat icon>😀</v-btn>
-                                        </v-flex>
-                                        <v-flex xs3 style="text-align:center;padding:4px;">
-                                            <v-btn flat icon>😀</v-btn>
-                                        </v-flex>
-                                        <v-flex xs3 style="text-align:center;padding:4px;">
-                                            <v-btn flat icon>😀</v-btn>
-                                        </v-flex>
-                                        <v-flex xs3 style="text-align:center;padding:4px;">
-                                            <v-btn flat icon>😀</v-btn>
-                                        </v-flex>
-                                        <v-flex xs3 style="text-align:center;padding:4px;">
-                                            <v-btn flat icon>😀</v-btn>
-                                        </v-flex>
-                                        <v-flex xs3 style="text-align:center;padding:4px;">
-                                            <v-btn flat icon>😀</v-btn>
-                                        </v-flex>
-                                    </v-layout>
-                                </v-container>
-                            </div> -->
                             <v-menu offset-y>
                                 <v-btn dark small fab color="pink" slot="activator" absolute left bottom>
                                     <v-icon>face</v-icon>
@@ -212,15 +181,7 @@ export default {
 .comment_box {
   margin-bottom:40px;
 }
-.faceBox {
-  width: 220px;
-  background-color: white;
-  border: 1px solid #eee;
-  border-radius: 10px;
-  position: absolute;
-  left: 60px;
-  top: 110px;
-}
+
 .no-content {
   text-align: center;
   margin: 20px 0;
