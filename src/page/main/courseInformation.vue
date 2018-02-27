@@ -12,7 +12,7 @@
                   <div class="course_author course_text-shadow">作者：{{courseContent.author}}</div>
                   <div class="course_createTime course_text-shadow">创建时间：{{courseContent.createdTime|formatDate}}</div>
                   <div class="course_description course_text-shadow">描述：{{courseContent.description}}</div>
-                  <v-btn absolute dark fab right color="pink">
+                  <v-btn absolute dark fab right color="pink" @click="collect">
                     <v-icon>favorite</v-icon>
                   </v-btn>
                 </v-flex>
@@ -318,210 +318,229 @@ import moment from "moment";
 import _ from "lodash";
 import api from "../../util/api.js";
 export default {
-    name: "courseInformation",
-    data() {
-        return {
-            msg: "我是课程详情",
-            courseContent: {},
-            coursewares: [],
-            experiments: [],
-            tests: [],
-            videos: [],
-            homeworks: [],
-            onlineTests: [],
-            tabs: [
-                { name: "课件资源", key: "coursewares" },
-                { name: "实验资源", key: "experiments" },
-                { name: "模拟试题", key: "tests" },
-                { name: "视频资源", key: "videos" },
-                { name: "习题作业", key: "homeworks" },
-                { name: "在线测试", key: "onlineTests" }
-            ],
-            active: null,
-            description: "",
-            inset: true,
-            snackbar: false,
-            timeout: 2000,
-            text: "",
-            comments: []
-        };
+  name: "courseInformation",
+  data() {
+    return {
+      msg: "我是课程详情",
+      courseContent: {},
+      coursewares: [],
+      experiments: [],
+      tests: [],
+      videos: [],
+      homeworks: [],
+      onlineTests: [],
+      tabs: [
+        { name: "课件资源", key: "coursewares" },
+        { name: "实验资源", key: "experiments" },
+        { name: "模拟试题", key: "tests" },
+        { name: "视频资源", key: "videos" },
+        { name: "习题作业", key: "homeworks" },
+        { name: "在线测试", key: "onlineTests" }
+      ],
+      active: null,
+      description: "",
+      inset: true,
+      snackbar: false,
+      timeout: 2000,
+      text: "",
+      comments: []
+    };
+  },
+  methods: {
+    // 收藏课程
+    collect() {
+      let data = {
+        user_id: this.$store.state.user_id,
+        course_id: this.$route.params.id,
+        course_name: this.courseContent.course_name,
+        courseImage: this.courseContent.courseImage
+      };
+      api.collectionCourse(data).then(res => {
+        if (res.code == 6) {
+          this.text = "收藏课程成功";
+          this.snackbar = true;
+        }
+        if(res.code == 61){
+           this.text = res.message;
+          this.snackbar = true;
+        }
+      });
     },
-    methods: {
-        // 获取文件最后的文件类型是否为pdf
-        checkPDF(fileName) {
-            let suffix = _.last(_.split(fileName, "."));
-            if (suffix == "pdf") {
-                return true;
-            }
-            return false;
-        },
+    // 获取文件最后的文件类型是否为pdf
+    checkPDF(fileName) {
+      let suffix = _.last(_.split(fileName, "."));
+      if (suffix == "pdf") {
+        return true;
+      }
+      return false;
+    },
 
-        checkFlag(data, type) {
-            let flag = 0;
-            if (data.length > 0) {
-                data.forEach(element => {
-                    if (type == "onlineTest") {
-                        if (!element.onlineTest_publish) {
-                            flag++;
-                        }
-                    }
-                    if (type == "comment") {
-                        if (!element.isPublish) {
-                            flag++;
-                        }
-                    }
-                });
-                if (flag == data.length) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                return true;
+    checkFlag(data, type) {
+      let flag = 0;
+      if (data.length > 0) {
+        data.forEach(element => {
+          if (type == "onlineTest") {
+            if (!element.onlineTest_publish) {
+              flag++;
             }
-        },
-        downLoad(url) {
-            // window.open(url);
-            window.location.href = url;
-        },
-        submitComment() {
-            if (!this.description.trim()) {
-                this.text = "内容不能为空";
-                this.snackbar = true;
-                return false;
+          }
+          if (type == "comment") {
+            if (!element.isPublish) {
+              flag++;
             }
-            let data = {
-                user_id: this.$store.state.user_id,
-                comment_content: this.description,
-                comment_type: "course",
-                type_id: this.$route.params.id,
-                comment_people: this.$store.state.username,
-                people_image: this.$store.state.userImage
+          }
+        });
+        if (flag == data.length) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return true;
+      }
+    },
+    downLoad(url) {
+      // window.open(url);
+      window.location.href = url;
+    },
+    submitComment() {
+      if (!this.description.trim()) {
+        this.text = "内容不能为空";
+        this.snackbar = true;
+        return false;
+      }
+      let data = {
+        user_id: this.$store.state.user_id,
+        comment_content: this.description,
+        comment_type: "course",
+        type_id: this.$route.params.id,
+        comment_people: this.$store.state.username,
+        people_image: this.$store.state.userImage
+      };
+      api
+        .addComment(data)
+        .then(res => {
+          if (res.code == 20) {
+            this.description = "";
+            this.text = res.message;
+            this.snackbar = true;
+            let CommentData = {
+              comment_type: "course",
+              type_id: this.$route.params.id
             };
-            api
-                .addComment(data)
-                .then(res => {
-                    if (res.code == 20) {
-                        this.description = "";
-                        this.text = res.message;
-                        this.snackbar = true;
-                        let CommentData = {
-                            comment_type: "course",
-                            type_id: this.$route.params.id
-                        };
-                        return api.findAllComment(CommentData);
-                    }
-                })
-                .then(res => {
-                    if (res.code == 21) {
-                        this.comments = res.data;
-                    }
-                });
-        }
-    },
-    created() {
-        let data = {
-            params: {
-                course_id: this.$route.params.id
-            }
-        };
-        api.getCourseById(data).then(res => {
-            this.msg = res.data;
-            this.courseContent = res.data[0];
+            return api.findAllComment(CommentData);
+          }
+        })
+        .then(res => {
+          if (res.code == 21) {
+            this.comments = res.data;
+          }
         });
-        let resourceData = {
-            query: {
-                course_id: this.$route.params.id
-            }
-        };
-        api.findAllResources(resourceData).then(res => {
-            if (res.code == 13) {
-                let result = res.data;
-                if (result.coursewares) {
-                    this.coursewares = result.coursewares;
-                } else {
-                    this.coursewares = [];
-                }
-                if (result.experiments) {
-                    this.experiments = result.experiments;
-                } else {
-                    this.experiments = [];
-                }
-                if (result.tests) {
-                    this.tests = result.tests;
-                } else {
-                    this.tests = [];
-                }
-                if (result.videos) {
-                    this.videos = result.videos;
-                } else {
-                    this.videos = [];
-                }
-                if (result.homeworks) {
-                    this.homeworks = result.homeworks;
-                } else {
-                    this.homeworks = [];
-                }
-            }
-        });
-
-        api.findOnlineTest(resourceData).then(res => {
-            if (res.code == 16) {
-                this.onlineTests = res.data;
-            }
-        });
-        let CommentData = {
-            comment_type: "course",
-            type_id: this.$route.params.id
-        };
-        api.findAllComment(CommentData).then(res => {
-            if (res.code == 21) {
-                this.comments = res.data;
-            }
-        });
-    },
-    filters: {
-        formatDate: function(value) {
-            return moment(value).format("MMMM Do YYYY");
-        }
     }
+  },
+  created() {
+    let data = {
+      params: {
+        course_id: this.$route.params.id
+      }
+    };
+    api.getCourseById(data).then(res => {
+      this.msg = res.data;
+      this.courseContent = res.data[0];
+    });
+    let resourceData = {
+      query: {
+        course_id: this.$route.params.id
+      }
+    };
+    api.findAllResources(resourceData).then(res => {
+      if (res.code == 13) {
+        let result = res.data;
+        if (result.coursewares) {
+          this.coursewares = result.coursewares;
+        } else {
+          this.coursewares = [];
+        }
+        if (result.experiments) {
+          this.experiments = result.experiments;
+        } else {
+          this.experiments = [];
+        }
+        if (result.tests) {
+          this.tests = result.tests;
+        } else {
+          this.tests = [];
+        }
+        if (result.videos) {
+          this.videos = result.videos;
+        } else {
+          this.videos = [];
+        }
+        if (result.homeworks) {
+          this.homeworks = result.homeworks;
+        } else {
+          this.homeworks = [];
+        }
+      }
+    });
+
+    api.findOnlineTest(resourceData).then(res => {
+      if (res.code == 16) {
+        this.onlineTests = res.data;
+      }
+    });
+    let CommentData = {
+      comment_type: "course",
+      type_id: this.$route.params.id
+    };
+    api.findAllComment(CommentData).then(res => {
+      if (res.code == 21) {
+        this.comments = res.data;
+      }
+    });
+  },
+  filters: {
+    formatDate: function(value) {
+      return moment(value).format("MMMM Do YYYY");
+    }
+  }
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang='scss'scoped>
 .courseInformation {
-    margin: 20px;
-    // width: 70%;
+  margin: 20px;
+  // width: 70%;
 }
 .course_title {
-    text-shadow: 5px 5px 5px black;
-    font-size: 3rem;
+  text-shadow: 5px 5px 5px black;
+  font-size: 3rem;
 }
 .course_author {
-    margin-top: 20px;
-    font-size: 1.5rem;
+  margin-top: 20px;
+  font-size: 1.5rem;
 }
 .course_text-shadow {
-    text-shadow: 2px 2px 2px rgb(153, 148, 148);
+  text-shadow: 2px 2px 2px rgb(153, 148, 148);
 }
 .course_createTime {
-    font-size: 1.2rem;
-    margin-top: 5px;
+  font-size: 1.2rem;
+  margin-top: 5px;
 }
 .course_description {
-    font-size: 1.2rem;
-    margin-top: 5px;
+  font-size: 1.2rem;
+  margin-top: 5px;
 }
 .no-content {
-    text-align: center;
-    margin-top: 50px;
+  text-align: center;
+  margin-top: 50px;
 }
 .comment_title {
-    margin: 10px 0;
-    font-size: 1.3rem;
+  margin: 10px 0;
+  font-size: 1.3rem;
 }
 .comment_box {
-    margin-bottom: 40px;
+  margin-bottom: 40px;
 }
 </style>

@@ -34,7 +34,7 @@
                 </v-card>
             </div>
             <div class="comment_content">
-                <template v-if="comments.length == 0">
+                <template v-if="checkFlag(comments,'comment')">
                     <v-layout row>
                         <v-flex>
                                 <v-divider></v-divider>
@@ -125,6 +125,30 @@ export default {
     });
   },
   methods: {
+    checkFlag(data, type) {
+      let flag = 0;
+      if (data.length > 0) {
+        data.forEach(element => {
+          if (type == "onlineTest") {
+            if (!element.onlineTest_publish) {
+              flag++;
+            }
+          }
+          if (type == "comment") {
+            if (!element.isPublish) {
+              flag++;
+            }
+          }
+        });
+        if (flag == data.length) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return true;
+      }
+    },
     submitComment() {
       if (!this.description.trim()) {
         this.text = "内容不能为空";
@@ -137,7 +161,7 @@ export default {
         comment_type: "videos",
         type_id: this.$route.params.id,
         comment_people: this.$store.state.username,
-        people_image: this.$store.state.userImage,
+        people_image: this.$store.state.userImage
       };
       api
         .addComment(data)
@@ -179,7 +203,7 @@ export default {
   font-size: 1.3rem;
 }
 .comment_box {
-  margin-bottom:40px;
+  margin-bottom: 40px;
 }
 
 .no-content {

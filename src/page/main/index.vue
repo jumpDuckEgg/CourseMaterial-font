@@ -1,7 +1,9 @@
 <template>
     <v-container>
+        <div class="main-title">全部课程</div>
         <v-layout row wrap>
-            <v-flex xs6 sm4 lg3 xl2 v-for="(item,index) in courses" :key="index" mt-5 px-3>
+            
+            <v-flex xs6 sm4 lg3 xl2 v-for="(item,index) in courses" :key="index" mt-2 px-3>
                 <v-card hover :to='"/course/"+item.course_id' tile>
                     <v-card-media class="white--text" height="150px" :src="item.courseImage">
                         <v-container fill-height fluid>
@@ -69,4 +71,10 @@ export default {
 .headline {
     text-shadow: 5px 5px 5px black;
 }
+.main-title {
+    border-left: 5px solid #1976d2;
+    padding-left: 10px;
+    margin: 10px 0;
+    font-size: 20px;
+  }
 </style>

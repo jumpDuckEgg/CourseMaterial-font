@@ -38,136 +38,300 @@
                 </v-card>
             </v-flex>
         </v-layout>
+        <v-layout>
+      <v-flex xs12 sm8 offset-sm2>
+        <div class="comment">
+
+          <div class="comment_title">评论</div>
+          <div class="comment_box">
+            <v-card>
+              <v-layout row style="position: relative">
+                <v-flex xs2 height="130px;">
+                  <v-card-media :src="this.$store.state.userImage" height="130px" contain></v-card-media>
+                </v-flex>
+                <v-flex xs10 style="height:130px;padding:0 10px;position: relative">
+                  <v-text-field label="说点什么吧..." v-model="description" multi-line rows="3" :rules="[(v) => v.length <= 100 || 'Max 100 characters']"></v-text-field>
+
+                  <v-menu offset-y>
+                    <v-btn dark small fab color="pink" slot="activator" absolute left bottom>
+                      <v-icon>face</v-icon>
+                    </v-btn>
+                    <v-list>
+                      <v-list-tile>
+                        <v-list-tile-title>待定</v-list-tile-title>
+                      </v-list-tile>
+                    </v-list>
+                  </v-menu>
+                </v-flex>
+                <v-tooltip bottom>
+                  <v-btn absolute dark fab bottom right color="blue" @click="submitComment" slot="activator">
+                    <v-icon>send</v-icon>
+                  </v-btn>
+                  <span>提交评论</span>
+                </v-tooltip>
+              </v-layout>
+            </v-card>
+          </div>
+          <div class="comment_content">
+            <template v-if="checkFlag(comments,'comment')">
+              <v-layout row>
+                <v-flex>
+                  <v-divider></v-divider>
+                  <div class="no-content">
+                    <v-icon color="grey lighten-1">info</v-icon>暂无评论</div>
+                </v-flex>
+              </v-layout>
+            </template>
+            <template v-if="comments.length>0">
+              <v-layout row v-for="(item,index) in comments" :key="index" v-if="item.isPublish">
+                <v-flex xs2 style="text-align:center;margin:10px 0;">
+                  <v-avatar size="60px">
+                    <img :src="item.people_image" alt="John">
+                  </v-avatar>
+                </v-flex>
+                <v-flex xs10>
+                  <v-divider></v-divider>
+                  <div style="margin:10px 0;">
+                    <span>{{item.comment_people}}</span>😊●
+                    <span class="red--text">{{item.createdTime|formatDate}}</span>
+                  </div>
+                  <div style="margin:10px 0;">
+                    {{item.comment_content}}
+                  </div>
+
+                </v-flex>
+              </v-layout>
+            </template>
+
+          </div>
+          <v-snackbar :timeout="timeout" top v-model="snackbar">
+            {{text}}
+            <v-btn flat color="pink" @click.native="snackbar = false">Close</v-btn>
+          </v-snackbar>
+        </div>
+      </v-flex>
+    </v-layout>
     </div>
 </template>
 
 <script>
+import moment from "moment";
 import api from "../../util/api.js";
 import pdf from "vue-pdf";
 export default {
-    name: "pdfView",
-    components: {
-        pdf
-    },
-    watch: {
-        pageInput: function(newQuestion, oldQuestion) {
-            if (newQuestion < 0) {
-                this.page = 1;
-                this.pageInput = 1;
-            }
-            if (newQuestion > this.numPages) {
-                this.page = this.numPages;
-                this.pageInput = this.numPages;
-            }
-            if (newQuestion > 0 && newQuestion <= this.numPages) {
-                this.page = newQuestion;
-            }
+  name: "pdfView",
+  components: {
+    pdf
+  },
+  watch: {
+    pageInput: function(newQuestion, oldQuestion) {
+      if (newQuestion < 0) {
+        this.page = 1;
+        this.pageInput = 1;
+      }
+      if (newQuestion > this.numPages) {
+        this.page = this.numPages;
+        this.pageInput = this.numPages;
+      }
+      if (newQuestion > 0 && newQuestion <= this.numPages) {
+        this.page = newQuestion;
+      }
+    }
+  },
+  created() {
+    if (this.$route.params.type == "experiment") {
+      let data = {
+        experiment_id: Number(this.$route.params.id)
+      };
+      api.getExperimentById(data).then(res => {
+        if (res.code == 24) {
+          this.info = res.data;
+          this.pdfName = res.data.experiment_name;
+          this.pdfUrl = res.data.experiment_url;
         }
+      });
+    }
+    if (this.$route.params.type == "test") {
+      let data = {
+        test_id: Number(this.$route.params.id)
+      };
+      api.getTestById(data).then(res => {
+        if (res.code == 26) {
+          this.info = res.data;
+          this.pdfName = res.data.test_name;
+          this.pdfUrl = res.data.test_url;
+        }
+      });
+    }
+    if (this.$route.params.type == "homwork") {
+      let data = {
+        homework_id: Number(this.$route.params.id)
+      };
+      api.getHomeworkById(data).then(res => {
+        if (res.code == 25) {
+          this.info = res.data;
+          this.pdfName = res.data.homework_name;
+          this.pdfUrl = res.data.homework_url;
+        }
+      });
+    }
+    let CommentData = {
+      comment_type: this.$route.params.type,
+      type_id: this.$route.params.id
+    };
+    api.findAllComment(CommentData).then(res => {
+      if (res.code == 21) {
+        this.comments = res.data;
+      }
+    });
+  },
+  data() {
+    return {
+      msg: "pdf查看",
+      page: 1,
+      pageInput: 1,
+      numPages: 0,
+      progressFlag: false,
+      pdfUrl: "",
+      pdfName: "",
+      info: {},
+      description: "",
+      inset: true,
+      snackbar: false,
+      timeout: 2000,
+      text: "",
+      comments: []
+    };
+  },
+  methods: {
+    checkFlag(data, type) {
+      let flag = 0;
+      if (data.length > 0) {
+        data.forEach(element => {
+          if (type == "onlineTest") {
+            if (!element.onlineTest_publish) {
+              flag++;
+            }
+          }
+          if (type == "comment") {
+            if (!element.isPublish) {
+              flag++;
+            }
+          }
+        });
+        if (flag == data.length) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return true;
+      }
     },
-    created() {
-        if (this.$route.params.type == "experiment") {
-            let data = {
-                experiment_id: Number(this.$route.params.id)
+    prePage() {
+      if (this.page > 1) {
+        this.page--;
+        this.pageInput--;
+      }
+    },
+    nextPage() {
+      if (this.page < this.numPages) {
+        this.page++;
+        this.pageInput++;
+      }
+    },
+    loaded() {
+      console.log("加载完成");
+      this.progressFlag = true;
+    },
+    submitComment() {
+      if (!this.description.trim()) {
+        this.text = "内容不能为空";
+        this.snackbar = true;
+        return false;
+      }
+      let data = {
+        user_id: this.$store.state.user_id,
+        comment_content: this.description,
+        comment_type: this.$route.params.type,
+        type_id: this.$route.params.id,
+        comment_people: this.$store.state.username,
+        people_image: this.$store.state.userImage
+      };
+      api
+        .addComment(data)
+        .then(res => {
+          if (res.code == 20) {
+            this.description = "";
+            this.text = res.message;
+            this.snackbar = true;
+            let CommentData = {
+              comment_type: this.$route.params.type,
+              type_id: this.$route.params.id
             };
-            api.getExperimentById(data).then(res => {
-                if (res.code == 24) {
-                    this.info = res.data;
-                    this.pdfName = res.data.experiment_name;
-                    this.pdfUrl = res.data.experiment_url;
-                }
-            });
-        }
-        if (this.$route.params.type == "test") {
-            let data = {
-                test_id: Number(this.$route.params.id)
-            };
-            api.getTestById(data).then(res => {
-                if (res.code == 26) {
-                    this.info = res.data;
-                    this.pdfName = res.data.test_name;
-                    this.pdfUrl = res.data.test_url;
-                }
-            });
-        }
-        if (this.$route.params.type == "homwork") {
-            let data = {
-                homework_id: Number(this.$route.params.id)
-            };
-            api.getHomeworkById(data).then(res => {
-                if (res.code == 25) {
-                    this.info = res.data;
-                    this.pdfName = res.data.homework_name;
-                    this.pdfUrl = res.data.homework_url;
-                }
-            });
-        }
-    },
-    data() {
-        return {
-            msg: "pdf查看",
-            page: 1,
-            pageInput: 1,
-            numPages: 0,
-            progressFlag: false,
-            pdfUrl: "",
-            pdfName: "",
-            info: {}
-        };
-    },
-    methods: {
-        prePage() {
-            if (this.page > 1) {
-                this.page--;
-                this.pageInput--;
-            }
-        },
-        nextPage() {
-            if (this.page < this.numPages) {
-                this.page++;
-                this.pageInput++;
-            }
-        },
-        loaded() {
-            console.log("加载完成");
-            this.progressFlag = true;
+            return api.findAllComment(CommentData);
+          }
+        })
+        .then(res => {
+          if (res.code == 21) {
+            this.comments = res.data;
+          }
+        });
+    }
+  },
+    filters: {
+        formatDate: function(value) {
+            return moment(value).format("MMMM Do YYYY");
         }
     }
+  
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang='scss'scoped>
 .pdfView {
-    margin: 10px auto;
-    &-title {
-        border-left: 5px solid #1976d2;
-        padding-left: 10px;
-        margin: 10px 0;
-        font-size: 20px;
-    }
+  margin: 10px auto;
+  &-title {
+    border-left: 5px solid #1976d2;
+    padding-left: 10px;
+    margin: 10px 0;
+    font-size: 20px;
+  }
 }
 .pdf-box {
-    position: relative;
+  position: relative;
 }
 .loading-box {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: white;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: white;
 }
 .progress-box {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translateX(-50%);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%);
 }
 .progress-text {
-    position: absolute;
-    top: 60%;
-    left: 50%;
-    transform: translateX(-50%);
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  transform: translateX(-50%);
 }
 .hidebox {
-    display: none;
+  display: none;
+}
+.no-content {
+    text-align: center;
+    margin-top: 50px;
+}
+.comment_title {
+    margin: 10px 0;
+    font-size: 1.3rem;
+}
+.comment_box {
+    margin-bottom: 40px;
 }
 </style>
