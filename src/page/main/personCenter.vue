@@ -32,19 +32,35 @@
                     </v-card-text>
                 </v-card>
 
-                <v-card style="margin-top:30px;"> 
+                <v-card style="margin-top:30px;">
                     <v-card-title primary-title>
                         <div class="personCenter-titleV2">
                             收藏课程
                         </div>
                     </v-card-title>
                     <v-container fluid grid-list-lg>
-                        <v-layout row>
-                            <v-flex xs4>
+                        <template v-if="userInfo.collections&&userInfo.collections.length == 0">
+                            <div class="no-content">
+                                <v-icon color="grey lighten-1">info</v-icon>暂无收藏课程</div>
+                        </template>
+                        <v-layout row wrap>
+                            <v-flex xs12 sm6 lg4 xl3 v-for="(item,index) in userInfo.collections" :key="index" mt-2 px-3>
+                                <v-card hover tile>
+                                    <v-card-media class="white--text" height="150px" :src="item.courseImage">
+                                        <v-container fill-height fluid>
+                                            <v-layout fill-height>
+                                                <v-flex xs12 align-end flexbox>
+                                                    <span class="headline courseName headlineV2">{{item.course_name}}</span>
+                                                </v-flex>
+                                            </v-layout>
+                                        </v-container>
+                                    </v-card-media>
 
-                            </v-flex>
-                            <v-flex xs8>
-
+                                    <v-card-actions>
+                                        <v-btn flat color="orange" :to='"/course/"+item.course_id'>进入课程</v-btn>
+                                        <v-btn flat color="orange" @click="cancelCollect(item)">取消收藏</v-btn>
+                                    </v-card-actions>
+                                </v-card>
                             </v-flex>
                         </v-layout>
                     </v-container>
@@ -53,6 +69,10 @@
                 </v-card>
             </v-flex>
         </v-layout>
+        <v-snackbar :timeout="timeout" top v-model="snackbar">
+            {{text}}
+            <v-btn flat color="pink" @click.native="snackbar = false">Close</v-btn>
+        </v-snackbar>
     </div>
 </template>
 
@@ -74,7 +94,10 @@ export default {
                 token: ""
             },
             uploadUrl: "",
-            newAvatarUrl: ""
+            newAvatarUrl: "",
+            snackbar: false,
+            timeout: 2000,
+            text: ""
         };
     },
     created() {
@@ -93,6 +116,30 @@ export default {
         }
     },
     methods: {
+        // 取消收藏
+        cancelCollect(data) {
+            let updateData = {
+                user_id: this.$store.state.user_id,
+                course_id: data.course_id,
+                course_name: data.course_name,
+                courseImage: data.courseImage
+            };
+            api.cancelCollectionCourse(updateData).then(res => {
+                if (res.code == 6) {
+                    this.text = "取消收藏成功";
+                    this.snackbar = true;
+                    let data = {
+                        user_id: this.$store.state.user_id
+                    };
+                    api.getUserById(data).then(res => {
+                        if (res.code == 6) {
+                            this.userInfo = res.data;
+                        }
+                    });
+                }
+            });
+        },
+        // 修改提交头像
         modifyLogo() {
             let data = {
                 query: {
@@ -177,5 +224,18 @@ export default {
 .avatar__edit {
     text-align: center;
     margin-top: 2px;
+}
+.courseName {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+}
+.no-content {
+    text-align: center;
+    margin-top: 50px;
+}
+.headlineV2 {
+    text-shadow: 5px 5px 5px black;
 }
 </style>

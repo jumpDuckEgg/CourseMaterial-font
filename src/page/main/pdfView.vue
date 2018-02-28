@@ -3,9 +3,10 @@
 
         <v-layout>
             <v-flex xs12 sm8 offset-sm2 md6 offset-md3>
-                <div class="pdfView-title">pdf查看</div>
                 <v-card>
-
+                    <v-card-title>
+                      <div class="pdfView-title">pdf查看</div>
+                    </v-card-title>
                     <v-card-text>
                         <div class="pdf-box">
                             <div class="loading-box" :class="{hidebox:progressFlag}">
@@ -42,7 +43,7 @@
       <v-flex xs12 sm8 offset-sm2>
         <div class="comment">
 
-          <div class="comment_title">评论</div>
+          <div class="comment_title">评价</div>
           <div class="comment_box">
             <v-card>
               <v-layout row style="position: relative">
@@ -67,7 +68,7 @@
                   <v-btn absolute dark fab bottom right color="blue" @click="submitComment" slot="activator">
                     <v-icon>send</v-icon>
                   </v-btn>
-                  <span>提交评论</span>
+                  <span>提交评价</span>
                 </v-tooltip>
               </v-layout>
             </v-card>
@@ -78,7 +79,7 @@
                 <v-flex>
                   <v-divider></v-divider>
                   <div class="no-content">
-                    <v-icon color="grey lighten-1">info</v-icon>暂无评论</div>
+                    <v-icon color="grey lighten-1">info</v-icon>暂无评价</div>
                 </v-flex>
               </v-layout>
             </template>
@@ -295,7 +296,7 @@ export default {
   &-title {
     border-left: 5px solid #1976d2;
     padding-left: 10px;
-    margin: 10px 0;
+    
     font-size: 20px;
   }
 }
@@ -329,7 +330,10 @@ export default {
 }
 .comment_title {
     margin: 10px 0;
+    margin-top: 15px;
     font-size: 1.3rem;
+    border-left: 4px solid #1976d2;
+    padding-left: 10px;
 }
 .comment_box {
     margin-bottom: 40px;
