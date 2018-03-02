@@ -39,12 +39,12 @@
                         </div>
                     </v-card-title>
                     <v-container fluid grid-list-lg>
-                        <template v-if="userInfo.collections&&userInfo.collections.length == 0">
+                        <template v-if="collections&&collections.length == 0">
                             <div class="no-content">
                                 <v-icon color="grey lighten-1">info</v-icon>暂无收藏课程</div>
                         </template>
                         <v-layout row wrap>
-                            <v-flex xs12 sm6 lg4 xl3 v-for="(item,index) in userInfo.collections" :key="index" mt-2 px-3>
+                            <v-flex xs12 sm6 lg4 xl3 v-for="(item,index) in collections" :key="index" mt-2 px-3>
                                 <v-card hover tile>
                                     <v-card-media class="white--text" height="150px" :src="item.courseImage">
                                         <v-container fill-height fluid>
@@ -63,6 +63,9 @@
                                 </v-card>
                             </v-flex>
                         </v-layout>
+                        <div class="text-xs-center my-3">
+                            <v-pagination :length="pageLength" v-model="page" @input="pageChange"></v-pagination>
+                        </div>
                     </v-container>
                     <v-card-text>
                     </v-card-text>
@@ -97,7 +100,11 @@ export default {
             newAvatarUrl: "",
             snackbar: false,
             timeout: 2000,
-            text: ""
+            text: "",
+            page: 1,
+            pageLength: 1,
+            limitNum: 4,
+            collections: []
         };
     },
     created() {
@@ -107,6 +114,15 @@ export default {
         api.getUserById(data).then(res => {
             if (res.code == 6) {
                 this.userInfo = res.data;
+
+                this.pageLength = Math.ceil(
+                    this.userInfo.collections.length / this.limitNum
+                );
+                if (this.pageLength == 1) {
+                    this.collections = this.userInfo.collections;
+                } else {
+                    this.collections = this.userInfo.collections.slice(0, 4);
+                }
             }
         });
     },
@@ -116,6 +132,17 @@ export default {
         }
     },
     methods: {
+        // 分页
+        pageChange(value) {
+            if (this.pageLength == value) {
+                this.collections = this.userInfo.collections.slice( (value - 1) * 4,this.userInfo.collections.length);
+            } else {
+                this.collections = this.userInfo.collections.slice(
+                    (value - 1) * 4,
+                    value * 4
+                );
+            }
+        },
         // 取消收藏
         cancelCollect(data) {
             let updateData = {
@@ -134,6 +161,18 @@ export default {
                     api.getUserById(data).then(res => {
                         if (res.code == 6) {
                             this.userInfo = res.data;
+                            this.page = 1;
+                            this.pageLength = Math.ceil(
+                                this.userInfo.collections.length / this.limitNum
+                            );
+                            if (this.pageLength == 1) {
+                                this.collections = this.userInfo.collections;
+                            } else {
+                                this.collections = this.userInfo.collections.slice(
+                                    0,
+                                    4
+                                );
+                            }
                         }
                     });
                 }

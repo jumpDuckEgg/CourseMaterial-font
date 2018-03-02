@@ -70,4 +70,16 @@ export default {
     cancelCollectionCourse(params) {
         return api.post('/user/unfavoriteCourse', params).then(res => res.data);
     },
+    // 删除评论
+    deleteComment(params) {
+        return api.post('/comment/deleteComment', params).then(res => res.data);
+    },
+    // 分页查找课程
+    getCourseByPage(params) {
+        return api.post('/course/getCourseSpecial', params).then(res => res.data);
+    },
+    // 分页查找评价
+    getCommentSpecial(params) {
+        return api.post('/comment/getCommentSpecial', params).then(res => res.data);
+    }
 }

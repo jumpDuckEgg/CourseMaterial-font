@@ -284,7 +284,7 @@
               </v-layout>
             </template>
             <template v-if="comments.length>0">
-              <v-layout row v-for="(item,index) in comments" :key="index" v-if="item.isPublish">
+              <v-layout row v-for="(item,index) in comments" :key="index">
                 <v-flex xs2 style="text-align:center;margin:10px 0;">
                   <v-avatar size="60px">
                     <img :src="item.people_image" alt="John">
@@ -293,15 +293,19 @@
                 <v-flex xs10>
                   <v-divider></v-divider>
                   <div style="margin:10px 0;">
-                    <span>{{item.comment_people}}</span>😊●
+                    <span>{{item.comment_people}}</span>😊
+                    <span v-if="item.comment_people == userself">(自己)</span>●
                     <span class="red--text">{{item.createdTime|formatDate}}</span>
+                    <v-btn flat small class="blue--text" @click.native.stop="openDialog(item)" v-if="item.comment_people == userself">删除</v-btn>
                   </div>
                   <div style="margin:10px 0;">
                     {{item.comment_content}}
                   </div>
-
                 </v-flex>
               </v-layout>
+              <div class="text-xs-center my-3">
+                <v-pagination :length="pageLength" v-model="page" @input="pageChange"></v-pagination>
+              </div>
             </template>
 
           </div>
@@ -309,6 +313,16 @@
             {{text}}
             <v-btn flat color="pink" @click.native="snackbar = false">Close</v-btn>
           </v-snackbar>
+          <v-dialog v-model="dialog" persistent max-width="290">
+            <v-card>
+              <v-card-title class="headline">确认删除评价？</v-card-title>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="green darken-1" flat @click.native="dialog = false">取消</v-btn>
+                <v-btn color="green darken-1" flat @click.native="deleteMyComment()">确认</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </div>
       </v-flex>
     </v-layout>
@@ -323,7 +337,9 @@ export default {
     name: "courseInformation",
     data() {
         return {
+            dialog: false,
             msg: "我是课程详情",
+            userself: this.$store.state.username,
             courseContent: {},
             coursewares: null,
             experiments: null,
@@ -351,10 +367,71 @@ export default {
                 duration: 300,
                 offset: 0,
                 easing: "easeInOutCubic"
-            }
+            },
+            tempComment: {},
+            page: 1,
+            pageLength: 1,
+            limitNum: 6
         };
     },
     methods: {
+        // 评价分页
+        pageChange(value) {
+            let commentsData = {
+                query: {
+                    comment_type: "course",
+                    type_id: this.$route.params.id,
+                    isPublish: true
+                },
+                page: value,
+                limit: this.limitNum
+            };
+            api.getCommentSpecial(commentsData).then(res => {
+                if (res.code == 21) {
+                    this.comments = res.data.comments;
+                    this.pageLength = Math.ceil(
+                        res.data.countNum / this.limitNum
+                    );
+                }
+            });
+        },
+        // 打开删除评价框
+        openDialog(data) {
+            this.dialog = true;
+            this.tempComment = data;
+        },
+        // 删除自己评价
+        deleteMyComment() {
+            let updateData = {
+                user_id: this.$store.state.user_id,
+                comment_id: this.tempComment.comment_id
+            };
+            api.deleteComment(updateData).then(res => {
+                if (res.code == 23) {
+                    this.text = res.message;
+                    this.snackbar = true;
+                    let commentsData = {
+                        query: {
+                            comment_type: "course",
+                            type_id: this.$route.params.id,
+                            isPublish: true
+                        },
+                        page: 1,
+                        limit: this.limitNum
+                    };
+                    api.getCommentSpecial(commentsData).then(res => {
+                        if (res.code = 21) {
+                          this.page = 1;
+                          this.dialog =false;
+                            this.comments = res.data.comments;
+                            this.pageLength = Math.ceil(
+                                res.data.countNum / this.limitNum
+                            );
+                        }
+                    });
+                }
+            });
+        },
         // 收藏课程
         collect() {
             let data = {
@@ -363,7 +440,7 @@ export default {
                 course_name: this.courseContent.course_name,
                 courseImage: this.courseContent.courseImage,
                 collectNum: this.courseContent.collectNum
-            };  
+            };
             api.collectionCourse(data).then(res => {
                 if (res.code == 6) {
                     this.text = "收藏课程成功";
@@ -426,25 +503,31 @@ export default {
                 comment_people: this.$store.state.username,
                 people_image: this.$store.state.userImage
             };
-            api
-                .addComment(data)
-                .then(res => {
-                    if (res.code == 20) {
-                        this.description = "";
-                        this.text = res.message;
-                        this.snackbar = true;
-                        let CommentData = {
+            api.addComment(data).then(res => {
+                if (res.code == 20) {
+                    this.description = "";
+                    this.text = res.message;
+                    this.snackbar = true;
+                    let commentsData = {
+                        query: {
                             comment_type: "course",
-                            type_id: this.$route.params.id
-                        };
-                        return api.findAllComment(CommentData);
-                    }
-                })
-                .then(res => {
-                    if (res.code == 21) {
-                        this.comments = res.data;
-                    }
-                });
+                            type_id: this.$route.params.id,
+                            isPublish: true
+                        },
+                        page: value,
+                        limit: this.limitNum
+                    };
+                    api.getCommentSpecial(commentsData).then(res => {
+                        if (res.code == 21) {
+                          this.page = 1;
+                            this.comments = res.data.comments;
+                            this.pageLength = Math.ceil(
+                                res.data.countNum / this.limitNum
+                            );
+                        }
+                    });
+                }
+            });
         }
     },
     created() {
@@ -498,13 +581,20 @@ export default {
                 this.onlineTests = res.data;
             }
         });
-        let CommentData = {
-            comment_type: "course",
-            type_id: this.$route.params.id
+
+        let commentsData = {
+            query: {
+                comment_type: "course",
+                type_id: this.$route.params.id,
+                isPublish: true
+            },
+            page: 1,
+            limit: this.limitNum
         };
-        api.findAllComment(CommentData).then(res => {
+        api.getCommentSpecial(commentsData).then(res => {
             if (res.code == 21) {
-                this.comments = res.data;
+                this.comments = res.data.comments;
+                this.pageLength = Math.ceil(res.data.countNum / this.limitNum);
             }
         });
     },

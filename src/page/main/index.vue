@@ -4,7 +4,7 @@
         <v-layout row wrap>
 
             <v-flex xs6 sm4 lg3 xl2 v-for="(item,index) in courses" :key="index" mt-2 px-3>
-                <v-card hover :to='"/course/"+item.course_id' tile >
+                <v-card hover :to='"/course/"+item.course_id' tile>
                     <v-card-media class="white--text" height="150px" :src="item.courseImage">
                         <v-container fill-height fluid>
                             <v-layout fill-height>
@@ -34,6 +34,9 @@
                 </v-card>
             </v-flex>
         </v-layout>
+        <div class="text-xs-center my-5">
+            <v-pagination :length="pageLength" @input='pageChange' v-model="page"></v-pagination>
+        </div>
     </v-container>
 </template>
 
@@ -44,20 +47,45 @@ export default {
     name: "mainCotent",
     data() {
         return {
-            courses: []
+            courses: [],
+            page: 1,
+            pageLength: 1,
+            limitNum: 9
         };
     },
     created() {
-        let data = {
-            params: {
+        let courseData = {
+            query: {
                 isPublish: "pass"
-            }
+            },
+            page: 1,
+            limit: this.limitNum
         };
-        api.findAllCourse(data).then(res => {
+        api.getCourseByPage(courseData).then(res => {
             if (res.code == 8) {
-                this.courses = res.data;
+                this.courses = res.data.courses;
+                this.pageLength = Math.ceil(res.data.countNum / this.limitNum);
             }
         });
+    },
+    methods: {
+        pageChange(value) {
+            let courseData = {
+                query: {
+                    isPublish: "pass"
+                },
+                page: value,
+                limit: this.limitNum
+            };
+            api.getCourseByPage(courseData).then(res => {
+                if (res.code == 8) {
+                    this.courses = res.data.courses;
+                    this.pageLength = Math.ceil(
+                        res.data.countNum / this.limitNum
+                    );
+                }
+            });
+        }
     },
     filters: {
         formatDate: function(value) {
@@ -84,7 +112,7 @@ export default {
     -webkit-line-clamp: 2;
     overflow: hidden;
 }
-.courseName{
+.courseName {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;

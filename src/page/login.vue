@@ -91,6 +91,11 @@ export default {
                     if (data.code == 2 || result.code == 3) {
                         this.remainInfo = data.message;
                         this.snackbar = true;
+                    } else if (result.code == 65) {
+                        this.remainInfo =
+                            "该用户已被封禁，封禁理由：" +
+                            result.data.disUsedMessage+",解封请联系管理员";
+                        this.snackbar = true;
                     } else {
                         this.remainInfo = data.message;
                         this.snackbar = true;
