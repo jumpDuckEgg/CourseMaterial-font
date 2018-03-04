@@ -514,7 +514,7 @@ export default {
                             type_id: this.$route.params.id,
                             isPublish: true
                         },
-                        page: value,
+                        page: 1,
                         limit: this.limitNum
                     };
                     api.getCommentSpecial(commentsData).then(res => {
