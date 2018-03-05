@@ -30,7 +30,12 @@
             <v-card-text>
               <v-form v-model="valid" ref="form">
                 <v-text-field label="用户名" v-model="username" :rules="usernameRules"></v-text-field>
-                <v-text-field label="密码" v-model="password" :rules="passwordRules" type="password" @keyup.enter='sumbmitInfo'></v-text-field>
+                <v-text-field label="密码" v-model="password" :rules="passwordRules" type="password"></v-text-field>
+                <v-text-field label="验证码" v-model="vcode" :rules="vcodeRules" @keyup.enter='sumbmitInfo'></v-text-field>
+                <img :src="imgDataURL" alt="" style="border:2px solid black">
+                <v-btn flat icon color="green" @click="refreshCode">
+                  <v-icon>cached</v-icon>
+                </v-btn>
               </v-form>
             </v-card-text>
             <v-card-actions>
@@ -41,7 +46,7 @@
               <v-spacer></v-spacer>
 
             </v-card-actions>
-            <v-snackbar :timeout="snackbarTimeOut" :top="snackbarFlag" :right="snackbarFlag" :multi-line="snackbarFlag" v-model="snackbar">
+            <v-snackbar :timeout="snackbarTimeOut" top right :multi-line="snackbarFlag" v-model="snackbar">
               {{remainInfo}}
               <v-btn flat color="pink" @click.native="snackbar = false">Close</v-btn>
             </v-snackbar>
@@ -52,6 +57,7 @@
   </div>
 </template>
 <script>
+import verification from "verification-code";
 import api from "../util/api.js";
 export default {
     name: "login",
@@ -62,13 +68,26 @@ export default {
         usernameRules: [v => !!v || "用户名不能为空"],
         password: "",
         passwordRules: [v => !!v || "密码不能为空"],
+        code: "",
+        vcode: "",
+        imgDataURL: "",
+        vcodeRules: [v => !!v || "验证码不能为空"],
         snackbar: false,
         remainInfo: "",
-        snackbarFlag: true,
         snackbarTimeOut: 5000,
         loading: false
     }),
+    created() {
+        let result = verification.create();
+        this.code = result.code; // 随机生成的验证码
+        this.imgDataURL = result.dataURL; // 验证码图片的 base64
+    },
     methods: {
+        refreshCode() {
+            let result = verification.create();
+            this.code = result.code; // 随机生成的验证码
+            this.imgDataURL = result.dataURL; // 验证码图片的 base64
+        },
         register() {
             this.$router.push({
                 path: "/register"
@@ -79,35 +98,45 @@ export default {
         },
         sumbmitInfo() {
             if (this.$refs.form.validate()) {
-                let data = {
-                    username: this.username.trim(),
-                    password: this.password.trim()
-                };
-                this.loading = true;
-                let that = this;
-                api.userLogin(data).then(data => {
-                    let result = data;
-                    that.loading = false;
-                    if (data.code == 2 || result.code == 3) {
-                        this.remainInfo = data.message;
-                        this.snackbar = true;
-                    } else if (result.code == 65) {
-                        this.remainInfo =
-                            "该用户已被封禁，封禁理由：" +
-                            result.data.disUsedMessage+",解封请联系管理员";
-                        this.snackbar = true;
-                    } else {
-                        this.remainInfo = data.message;
-                        this.snackbar = true;
-                        let userData = result.data;
+                if (this.vcode == this.code) {
+                    let data = {
+                        username: this.username.trim(),
+                        password: this.password.trim()
+                    };
+                    this.loading = true;
+                    let that = this;
+                    api.userLogin(data).then(data => {
+                        let result = data;
+                        that.loading = false;
+                        if (data.code == 2 || result.code == 3) {
+                            this.remainInfo = data.message;
+                            this.snackbar = true;
+                        } else if (result.code == 65) {
+                            this.remainInfo =
+                                "该用户已被封禁，封禁理由：" +
+                                result.data.disUsedMessage +
+                                ",解封请联系管理员";
+                            this.snackbar = true;
+                        } else {
+                            this.remainInfo = data.message;
+                            this.snackbar = true;
+                            let userData = result.data;
 
-                        this.$store.dispatch("UserLogin", userData);
-                        let redirectUrl = decodeURIComponent(
-                            this.$route.query.redirect || "/"
-                        );
-                        this.$router.push({ path: redirectUrl });
-                    }
-                });
+                            this.$store.dispatch("UserLogin", userData);
+                            let redirectUrl = decodeURIComponent(
+                                this.$route.query.redirect || "/"
+                            );
+                            this.$router.push({ path: redirectUrl });
+                        }
+                    });
+                } else {
+                    this.remainInfo = "验证码错误";
+                    this.snackbar = true;
+                    let result = verification.create();
+                    this.code = result.code; // 随机生成的验证码
+                    this.imgDataURL = result.dataURL; // 验证码图片的 base64
+                    this.vcode = "";
+                }
             }
         }
     }
