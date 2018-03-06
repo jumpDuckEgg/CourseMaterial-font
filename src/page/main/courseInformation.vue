@@ -219,23 +219,40 @@
                           </template>
                         </v-list>
                       </template>
+                       <template v-if="item.key=='moniexams'">
+                        <template v-if="moniexams&&moniexams.length==0">
+                          <div class="no-content">
+                            <v-icon color="grey lighten-1">info</v-icon>暂无此资源</div>
+                        </template>
+                        <!-- {{onlineTests}} -->
+                        <v-list two-line>
+                          
+                          <template v-for="(item,index) in moniexams">
+                            <v-list-tile avatar :key="item.moniExam_id" :to='"/moniExam/"+item.moniExam_id' >
+                              <v-list-tile-avatar>
+                                <v-icon large color="blue  darken-2">assessment</v-icon>
+                              </v-list-tile-avatar>
+                              <v-list-tile-content>
+                                <v-list-tile-title>{{ item.moniExam_title }}</v-list-tile-title>
+                                <v-list-tile-sub-title>{{ item.createdTime |formatDate }}</v-list-tile-sub-title>
+                              </v-list-tile-content>
+                              <v-list-tile-action>
+                                <v-btn ripple>
+                                  <v-icon color="grey lighten-1">play_circle_filled</v-icon>点击进入测试
+                                </v-btn>
+                              </v-list-tile-action>
+                            </v-list-tile>
+                            <v-divider v-if="index + 1 < onlineTests.length" :key="`divider-${index}`"></v-divider>
+                          </template>
+                        </v-list>
+                      </template>
                     </v-card-text>
                   </v-card>
                 </v-tab-item>
               </v-tabs>
             </div>
           </v-card-text>
-          <!-- <v-card-title>
-              <div>
-                <span class="grey--text">Number 10</span><br>
-                <span>Whitehaven Beach</span><br>
-                <span>Whitsunday Island, Whitsunday Islands</span>
-              </div>
-            </v-card-title> -->
-          <!-- <v-card-actions>
-              <v-btn flat color="orange">Share</v-btn>
-              <v-btn flat color="orange">Explore</v-btn>
-            </v-card-actions> -->
+
         </v-card>
       </v-flex>
     </v-layout>
@@ -347,13 +364,15 @@ export default {
             videos: null,
             homeworks: null,
             onlineTests: null,
+            moniexams: null,
             tabs: [
                 { name: "课件资源", key: "coursewares" },
                 { name: "实验资源", key: "experiments" },
                 { name: "模拟试题", key: "tests" },
                 { name: "视频资源", key: "videos" },
                 { name: "习题作业", key: "homeworks" },
-                { name: "在线测试", key: "onlineTests" }
+                { name: "在线测试", key: "onlineTests" },
+                { name: "模拟试卷", key: "moniexams" }
             ],
             active: null,
             description: "",
@@ -420,9 +439,9 @@ export default {
                         limit: this.limitNum
                     };
                     api.getCommentSpecial(commentsData).then(res => {
-                        if (res.code = 21) {
-                          this.page = 1;
-                          this.dialog =false;
+                        if ((res.code = 21)) {
+                            this.page = 1;
+                            this.dialog = false;
                             this.comments = res.data.comments;
                             this.pageLength = Math.ceil(
                                 res.data.countNum / this.limitNum
@@ -519,7 +538,7 @@ export default {
                     };
                     api.getCommentSpecial(commentsData).then(res => {
                         if (res.code == 21) {
-                          this.page = 1;
+                            this.page = 1;
                             this.comments = res.data.comments;
                             this.pageLength = Math.ceil(
                                 res.data.countNum / this.limitNum
@@ -572,6 +591,11 @@ export default {
                     this.homeworks = result.homeworks;
                 } else {
                     this.homeworks = [];
+                }
+                if (result.moniexams) {
+                    this.moniexams = result.moniexams;
+                } else {
+                    this.moniexams = [];
                 }
             }
         });

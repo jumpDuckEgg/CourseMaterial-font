@@ -81,5 +81,9 @@ export default {
     // 分页查找评价
     getCommentSpecial(params) {
         return api.post('/comment/getCommentSpecial', params).then(res => res.data);
-    }
+    },
+    // 获取模拟试卷通过参数
+    getAllMoniExamByOptions(params) {
+        return api.post('/moniExam/getAllMoniExamByOptions', params).then(res => res.data);
+    },
 }

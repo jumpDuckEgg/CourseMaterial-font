@@ -65,7 +65,6 @@ export default {
 <style lang="scss" scoped>
 .main {
   margin: auto;
-  border: 1px solid black;
   // width: 1200px;
   margin-bottom: 55px;
 }

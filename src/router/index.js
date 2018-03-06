@@ -59,6 +59,12 @@ const PdfView = resolve => {
   })
 }
 
+const MoniExam = resolve =>{
+  require.ensure(['@/page/main/moniExam.vue'],()=>{
+    resolve(require('@/page/main/moniExam.vue'));
+  })
+}
+
 //单独变量router是为了对路由进行拦截
 const router = new Router({
   mode: 'history',//更改路由的url显示方式，即少了'/#/'
@@ -111,6 +117,14 @@ const router = new Router({
           component: PdfView,
           meta: {
             requiresAuth: true
+          }
+        },
+        {
+          path:'moniExam/:id',
+          name:"moniExam",
+          component:MoniExam,
+          meta:{
+            requiresAuth:true
           }
         }
 

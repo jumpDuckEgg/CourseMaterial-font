@@ -1,12 +1,12 @@
 <template>
     <div class="onlineTest">
-        
+
         <v-card>
             <v-card-title primary-title>
                 <div>
                     <div class="online-title">
-            <h3 class="headline mb-0">在线测试</h3>
-        </div>
+                        <h3 class="headline mb-0">在线测试</h3>
+                    </div>
                     <div class="headline">测试：{{onlineTest.onlineTest_title}}</div>
                     <span class="grey--text">发布时间：{{onlineTest.createdTime|formatDate}}</span>
                 </div>
@@ -23,7 +23,7 @@
                                 <v-radio :label="`${option.id}.${option.options} `" :value="option.id" :key="optionIndex"></v-radio>
                             </template>
                         </v-radio-group>
-                        
+
                     </div>
                 </template>
                 <v-divider></v-divider>
