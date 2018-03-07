@@ -3,7 +3,6 @@
     <!-- 头部tab -->
     <v-toolbar dark color="primary">
       <v-toolbar-side-icon to='/'>
-        <img src="../../static/duck.png" alt="duck" style="width:30px;height:30px;">
       </v-toolbar-side-icon>
       <v-toolbar-title class="white--text">网络应用技术资源库</v-toolbar-title>
       <v-spacer></v-spacer>
