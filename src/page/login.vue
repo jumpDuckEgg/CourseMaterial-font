@@ -76,7 +76,7 @@ export default {
         remainInfo: "",
         snackbarTimeOut: 5000,
         loading: false,
-        snackbarFlag:true
+        snackbarFlag: true
     }),
     created() {
         let result = verification.create();
@@ -119,6 +119,18 @@ export default {
                                 ",解封请联系管理员";
                             this.snackbar = true;
                         } else {
+                            if (result.data.userType ==1) {
+                                this.remainInfo =
+                                    "该账号为教师账号，请在教师端登录";
+                                this.snackbar = true;
+                                return false;
+                            }
+                            if (result.data.userType ==3) {
+                                this.remainInfo =
+                                    "该账号为管理员账号，请在教师端登录";
+                                this.snackbar = true;
+                                return false;
+                            }
                             this.remainInfo = data.message;
                             this.snackbar = true;
                             let userData = result.data;

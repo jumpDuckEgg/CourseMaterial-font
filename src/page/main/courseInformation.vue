@@ -37,7 +37,7 @@
                             <v-icon color="grey lighten-1">info</v-icon>暂无此资源</div>
                         </template>
                         <v-list two-line>
-                          <template v-for="(item,index) in coursewares">
+                          <template v-for="(item,index) in coursewaresData">
                             <v-list-tile avatar :key="item.courseware_id">
                               <v-list-tile-avatar>
                                 <v-icon large color="blue  darken-2">description</v-icon>
@@ -58,6 +58,9 @@
                             <v-divider v-if="index + 1 < coursewares.length" :key="`divider-${index}`"></v-divider>
                           </template>
                         </v-list>
+                        <div class="text-xs-center">
+                          <v-pagination :length="coursewaresPageLength" v-model="coursewaresPage" @input='coursewaresPageChange'></v-pagination>
+                        </div>
                       </template>
                       <template v-if="item.key=='experiments'">
                         <template v-if="experiments&&experiments.length == 0">
@@ -66,7 +69,7 @@
                         </template>
                         <!-- {{experiments}} -->
                         <v-list two-line>
-                          <template v-for="(item,index) in experiments">
+                          <template v-for="(item,index) in experimentsData">
                             <v-list-tile avatar :key="item.experiment_id">
                               <v-list-tile-avatar>
                                 <v-icon large color="blue  darken-2">description</v-icon>
@@ -93,6 +96,9 @@
                             <v-divider v-if="index + 1 < experiments.length" :key="`divider-${index}`"></v-divider>
                           </template>
                         </v-list>
+                        <div class="text-xs-center">
+                          <v-pagination :length="experimentsPageLength" v-model="experimentsPage" @input='experimentsPageChange'></v-pagination>
+                        </div>
                       </template>
                       <template v-if="item.key=='tests'">
                         <template v-if="tests&&tests.length == 0">
@@ -101,7 +107,7 @@
                         </template>
                         <!-- {{tests}} -->
                         <v-list two-line>
-                          <template v-for="(item,index) in tests">
+                          <template v-for="(item,index) in testsData">
                             <v-list-tile avatar :key="item.test_id">
                               <v-list-tile-avatar>
                                 <v-icon large color="blue  darken-2">description</v-icon>
@@ -128,6 +134,9 @@
                             <v-divider v-if="index + 1 < tests.length" :key="`divider-${index}`"></v-divider>
                           </template>
                         </v-list>
+                        <div class="text-xs-center">
+                          <v-pagination :length="testsPageLength" v-model="testsPage" @input='testsPageChange'></v-pagination>
+                        </div>
                       </template>
                       <template v-if="item.key=='videos'">
                         <template v-if="videos&&videos.length == 0">
@@ -136,7 +145,7 @@
                         </template>
                         <!-- {{videos}} -->
                         <v-list two-line>
-                          <template v-for="(item,index) in videos">
+                          <template v-for="(item,index) in videosData">
                             <v-list-tile avatar :key="item.video_id">
                               <v-list-tile-avatar>
                                 <v-icon large color="blue  darken-2">ondemand_video</v-icon>
@@ -157,6 +166,9 @@
                             <v-divider v-if="index + 1 < videos.length" :key="`divider-${index}`"></v-divider>
                           </template>
                         </v-list>
+                        <div class="text-xs-center">
+                          <v-pagination :length="videosPageLength" v-model="videosPage" @input='videosPageChange'></v-pagination>
+                        </div>
                       </template>
                       <template v-if="item.key=='homeworks'">
                         <template v-if="homeworks&&homeworks.length == 0">
@@ -165,7 +177,7 @@
                         </template>
                         <!-- {{homeworks}} -->
                         <v-list two-line>
-                          <template v-for="(item,index) in homeworks">
+                          <template v-for="(item,index) in homeworksData">
                             <v-list-tile avatar :key="item.homework_id">
                               <v-list-tile-avatar>
                                 <v-icon large color="blue  darken-2">school</v-icon>
@@ -192,6 +204,9 @@
                             <v-divider v-if="index + 1 < homeworks.length" :key="`divider-${index}`"></v-divider>
                           </template>
                         </v-list>
+                        <div class="text-xs-center">
+                          <v-pagination :length="homeworksPageLength" v-model="homeworksPage" @input='homeworksPageChange'></v-pagination>
+                        </div>
                       </template>
                       <template v-if="item.key=='onlineTests'">
                         <template v-if="onlineTests&&checkFlag(onlineTests,'onlineTest')">
@@ -200,7 +215,7 @@
                         </template>
                         <!-- {{onlineTests}} -->
                         <v-list two-line>
-                          <template v-for="(item,index) in onlineTests">
+                          <template v-for="(item,index) in onlineTestsData">
                             <v-list-tile avatar :key="item.onlineTest_id" :to='"/onlineTest/"+item.onlineTest_id' v-if="item.onlineTest_publish">
                               <v-list-tile-avatar>
                                 <v-icon large color="blue  darken-2">assessment</v-icon>
@@ -218,17 +233,20 @@
                             <v-divider v-if="index + 1 < onlineTests.length" :key="`divider-${index}`"></v-divider>
                           </template>
                         </v-list>
+                        <div class="text-xs-center">
+                          <v-pagination :length="onlineTestsPageLength" v-model="onlineTestsPage" @input='onlineTestsPageChange'></v-pagination>
+                        </div>
                       </template>
-                       <template v-if="item.key=='moniexams'">
+                      <template v-if="item.key=='moniexams'">
                         <template v-if="moniexams&&moniexams.length==0">
                           <div class="no-content">
                             <v-icon color="grey lighten-1">info</v-icon>暂无此资源</div>
                         </template>
                         <!-- {{onlineTests}} -->
                         <v-list two-line>
-                          
-                          <template v-for="(item,index) in moniexams">
-                            <v-list-tile avatar :key="item.moniExam_id" :to='"/moniExam/"+item.moniExam_id' >
+
+                          <template v-for="(item,index) in moniExamData">
+                            <v-list-tile avatar :key="item.moniExam_id" :to='"/moniExam/"+item.moniExam_id'>
                               <v-list-tile-avatar>
                                 <v-icon large color="blue  darken-2">assessment</v-icon>
                               </v-list-tile-avatar>
@@ -242,9 +260,13 @@
                                 </v-btn>
                               </v-list-tile-action>
                             </v-list-tile>
-                            <v-divider v-if="index + 1 < onlineTests.length" :key="`divider-${index}`"></v-divider>
+                            <v-divider v-if="index + 1 < moniexams.length" :key="`divider-${index}`"></v-divider>
                           </template>
+
                         </v-list>
+                        <div class="text-xs-center">
+                          <v-pagination :length="moniExamPageLength" v-model="moniExamPage" @input='moniExamPageChange'></v-pagination>
+                        </div>
                       </template>
                     </v-card-text>
                   </v-card>
@@ -390,10 +412,80 @@ export default {
             tempComment: {},
             page: 1,
             pageLength: 1,
-            limitNum: 6
+            limitNum: 6,
+            moniExamPage: 1,
+            moniExamPageLength: 1,
+            moniExamData: [],
+            onlineTestsPage: 1,
+            onlineTestsPageLength: 1,
+            onlineTestsData: [],
+            homeworksPage: 1,
+            homeworksPageLength: 1,
+            homeworksData: [],
+            videosPage: 1,
+            videosPageLength: 1,
+            videosData: [],
+            testsPage: 1,
+            testsPageLength: 1,
+            testsData: [],
+            experimentsPage: 1,
+            experimentsPageLength: 1,
+            experimentsData: [],
+            coursewaresPage: 1,
+            coursewaresPageLength: 1,
+            coursewaresData: []
         };
     },
     methods: {
+        coursewaresPageChange(val) {
+            let offset = (val - 1) * this.limitNum;
+            this.coursewaresData =
+                offset + this.limitNum >= this.coursewares.length
+                    ? this.coursewares.slice(offset, this.coursewares.length)
+                    : this.coursewares.slice(offset, offset + this.limitNum);
+        },
+        experimentsPageChange(val) {
+            let offset = (val - 1) * this.limitNum;
+            this.experimentsData =
+                offset + this.limitNum >= this.experiments.length
+                    ? this.experiments.slice(offset, this.experiments.length)
+                    : this.experiments.slice(offset, offset + this.limitNum);
+        },
+        testsPageChange(val) {
+            let offset = (val - 1) * this.limitNum;
+            this.testsData =
+                offset + this.limitNum >= this.tests.length
+                    ? this.tests.slice(offset, this.tests.length)
+                    : this.tests.slice(offset, offset + this.limitNum);
+        },
+        videosPageChange(val) {
+            let offset = (val - 1) * this.limitNum;
+            this.videosData =
+                offset + this.limitNum >= this.videos.length
+                    ? this.videos.slice(offset, this.videos.length)
+                    : this.videos.slice(offset, offset + this.limitNum);
+        },
+        homeworksPageChange(val) {
+            let offset = (val - 1) * this.limitNum;
+            this.homeworksData =
+                offset + this.limitNum >= this.homeworks.length
+                    ? this.homeworks.slice(offset, this.homeworks.length)
+                    : this.homeworks.slice(offset, offset + this.limitNum);
+        },
+        onlineTestsPageChange(val) {
+            let offset = (val - 1) * this.limitNum;
+            this.onlineTestsData =
+                offset + this.limitNum >= this.onlineTests.length
+                    ? this.onlineTests.slice(offset, this.onlineTests.length)
+                    : this.onlineTests.slice(offset, offset + this.limitNum);
+        },
+        moniExamPageChange(val) {
+            let offset = (val - 1) * this.limitNum;
+            this.moniExamData =
+                offset + this.limitNum >= this.moniexams.length
+                    ? this.moniexams.slice(offset, this.moniexams.length)
+                    : this.moniexams.slice(offset, offset + this.limitNum);
+        },
         // 评价分页
         pageChange(value) {
             let commentsData = {
@@ -569,31 +661,109 @@ export default {
                 let result = res.data;
                 if (result.coursewares) {
                     this.coursewares = result.coursewares;
+                    this.coursewaresPageLength = Math.ceil(
+                        this.coursewares.length / this.limitNum
+                    );
+                    let offset = 0;
+                    this.coursewaresData =
+                        offset + this.limitNum >= this.coursewares.length
+                            ? this.coursewares.slice(
+                                  offset,
+                                  this.coursewares.length
+                              )
+                            : this.coursewares.slice(
+                                  offset,
+                                  offset + this.limitNum
+                              );
+                    this.coursewaresPage = 1;
                 } else {
                     this.coursewares = [];
                 }
                 if (result.experiments) {
                     this.experiments = result.experiments;
+                    this.experimentsPageLength = Math.ceil(
+                        this.experiments.length / this.limitNum
+                    );
+                    let offset = 0;
+                    this.experimentsData =
+                        offset + this.limitNum >= this.experiments.length
+                            ? this.experiments.slice(
+                                  offset,
+                                  this.experiments.length
+                              )
+                            : this.experiments.slice(
+                                  offset,
+                                  offset + this.limitNum
+                              );
+                    this.experimentsPage = 1;
                 } else {
                     this.experiments = [];
                 }
                 if (result.tests) {
                     this.tests = result.tests;
+                    this.testsPageLength = Math.ceil(
+                        this.tests.length / this.limitNum
+                    );
+                    let offset = 0;
+                    this.testsData =
+                        offset + this.limitNum >= this.tests.length
+                            ? this.tests.slice(offset, this.tests.length)
+                            : this.tests.slice(offset, offset + this.limitNum);
+                    this.testsPage = 1;
                 } else {
                     this.tests = [];
                 }
                 if (result.videos) {
                     this.videos = result.videos;
+                    this.videosPageLength = Math.ceil(
+                        this.videos.length / this.limitNum
+                    );
+                    let offset = 0;
+                    this.videosData =
+                        offset + this.limitNum >= this.videos.length
+                            ? this.videos.slice(offset, this.videos.length)
+                            : this.videos.slice(offset, offset + this.limitNum);
+                    this.videosPage = 1;
                 } else {
                     this.videos = [];
                 }
                 if (result.homeworks) {
                     this.homeworks = result.homeworks;
+                    this.homeworksPageLength = Math.ceil(
+                        this.homeworks.length / this.limitNum
+                    );
+                    let offset = 0;
+                    this.homeworksData =
+                        offset + this.limitNum >= this.homeworks.length
+                            ? this.homeworks.slice(
+                                  offset,
+                                  this.homeworks.length
+                              )
+                            : this.homeworks.slice(
+                                  offset,
+                                  offset + this.limitNum
+                              );
+                    this.homeworksPage = 1;
                 } else {
                     this.homeworks = [];
                 }
                 if (result.moniexams) {
                     this.moniexams = result.moniexams;
+                    this.moniExamPageLength = Math.ceil(
+                        this.moniexams.length / this.limitNum
+                    );
+                    let offset = 0;
+                    this.moniExamData =
+                        offset + this.limitNum >= this.moniexams.length
+                            ? this.moniexams.slice(
+                                  offset,
+                                  this.moniexams.length
+                              )
+                            : this.moniexams.slice(
+                                  offset,
+                                  offset + this.limitNum
+                              );
+                    this.moniExamPage = 1;
                 } else {
                     this.moniexams = [];
                 }
@@ -603,6 +773,21 @@ export default {
         api.findOnlineTest(resourceData).then(res => {
             if (res.code == 16) {
                 this.onlineTests = res.data;
+                this.onlineTestsPageLength = Math.ceil(
+                    this.onlineTests.length / this.limitNum
+                );
+                let offset = 0;
+                this.onlineTestsData =
+                    offset + this.limitNum >= this.onlineTests.length
+                        ? this.onlineTests.slice(
+                              offset,
+                              this.onlineTests.length
+                          )
+                        : this.onlineTests.slice(
+                              offset,
+                              offset + this.limitNum
+                          );
+                this.moniExamPage = 1;
             }
         });
 

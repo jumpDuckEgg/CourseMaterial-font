@@ -1,8 +1,15 @@
 <template>
     <v-container>
+        <v-toolbar floating dense>
+            <v-text-field prepend-icon="search" hide-details single-line placeholder="课程名称、作者名" v-model="searchWord"></v-text-field>
+            <v-btn icon @click="searchCourse">
+                <v-icon>done</v-icon>
+            </v-btn>
+        </v-toolbar>
         <div class="main-title">全部课程</div>
         <v-layout row wrap>
-
+            <div v-if="courses.length==0" style="margin:10px auto;text-align:center;">
+                <v-icon color="grey lighten-1">info</v-icon>暂无课程信息</div>
             <v-flex xs6 sm4 lg3 xl2 v-for="(item,index) in courses" :key="index" mt-2 px-3>
                 <v-card hover :to='"/course/"+item.course_id' tile>
                     <v-card-media class="white--text" height="150px" :src="item.courseImage">
@@ -50,7 +57,8 @@ export default {
             courses: [],
             page: 1,
             pageLength: 1,
-            limitNum: 9
+            limitNum: 9,
+            searchWord: ""
         };
     },
     created() {
@@ -69,6 +77,30 @@ export default {
         });
     },
     methods: {
+        searchCourse() {
+            let keyword = this.searchWord.trim(); //从URL中传来的 keyword参数
+            let courseData = {
+                query: {
+                    $or: [
+                        //多条件，数组
+                        { course_name: { $regex: keyword } },
+                        { author: { $regex: keyword } }
+                    ],
+                    isPublish: "pass"
+                },
+                page: 1,
+                limit: this.limitNum
+            };
+            api.getCourseByPage(courseData).then(res => {
+                if (res.code == 8) {
+                    this.courses = res.data.courses;
+                    this.pageLength = Math.ceil(
+                        res.data.countNum / this.limitNum
+                    );
+                    // console.log(res.data);
+                }
+            });
+        },
         pageChange(value) {
             let courseData = {
                 query: {
