@@ -1,6 +1,6 @@
 <template>
   <div class="pdfView">
-
+    <v-btn @click="backPage">返回上一页</v-btn>
     <v-layout>
 
       <v-flex xs12 sm8 offset-sm2 md6 offset-md3>
@@ -233,6 +233,9 @@ export default {
         };
     },
     methods: {
+        backPage() {
+            this.$router.go(-1);
+        },
         // 评价分页
         pageChange(value) {
             let commentsData = {

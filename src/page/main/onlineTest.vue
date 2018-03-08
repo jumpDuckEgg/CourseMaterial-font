@@ -1,6 +1,6 @@
 <template>
     <div class="onlineTest">
-
+    <v-btn @click="backPage">返回上一页</v-btn>
         <v-card>
             <v-card-title primary-title>
                 <div>
@@ -18,7 +18,7 @@
                             <span>{{index+1}}.{{item.title}}</span>
                             <span>({{item.score}}分)</span>
                         </div>
-                        <v-radio-group v-model="item.checkRadio" row>
+                        <v-radio-group v-model="item.checkRadio" >
                             <template v-for="(option,optionIndex) in item.optionsData">
                                 <v-radio :label="`${option.id}.${option.options} `" :value="option.id" :key="optionIndex"></v-radio>
                             </template>
@@ -29,13 +29,13 @@
                 <v-divider></v-divider>
                 <div class="result" :class="{resultHide:submitFlag}">
                     <div>答题卡：成绩({{achievement}}分)</div>
-                    <v-layout>
+                  
                         <template v-for="(item,index) in onlineTest.onlineTest_content">
-                            <v-flex xs6 :key="index">
+                            <div  :key="index" style="margin:5px 0;">
                                 第{{index+1}}题.你的答案：{{item.checkRadio}} || 正确答案：{{item.answer}}
-                            </v-flex>
+                            </div>
                         </template>
-                    </v-layout>
+                    
                 </div>
             </v-card-text>
             <v-card-actions :class="{resultHide:!submitFlag}">
@@ -77,6 +77,9 @@ export default {
         });
     },
     methods: {
+        backPage() {
+            this.$router.go(-1);
+        },
         submitTest() {
             let couter = 0;
             let allcouter = this.onlineTest.onlineTest_content.length;

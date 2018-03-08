@@ -1,5 +1,6 @@
 <template>
     <div class="personCenter">
+        <v-btn @click="backPage">返回上一页</v-btn>
         <v-layout>
             <v-flex xs12 sm8 offset-sm2>
                 <v-card>
@@ -132,10 +133,16 @@ export default {
         }
     },
     methods: {
+        backPage() {
+            this.$router.go(-1);
+        },
         // 分页
         pageChange(value) {
             if (this.pageLength == value) {
-                this.collections = this.userInfo.collections.slice( (value - 1) * 4,this.userInfo.collections.length);
+                this.collections = this.userInfo.collections.slice(
+                    (value - 1) * 4,
+                    this.userInfo.collections.length
+                );
             } else {
                 this.collections = this.userInfo.collections.slice(
                     (value - 1) * 4,
@@ -219,14 +226,14 @@ export default {
         cropSuccess(imgDataUrl, field) {
             console.log("-------- crop success --------");
             this.imgDataUrl = imgDataUrl;
-            console.log(field);
+         
 
             //this.show = !this.show;
             // console.log(this.params);
         },
         cropUploadSuccess(jsonData, field) {
             console.log("-------- upload success --------");
-            console.log(jsonData);
+      
             this.newAvatarUrl = jsonData.key;
             this.userInfo.userImage = jsonData.key;
             // console.log('field: ' + field);

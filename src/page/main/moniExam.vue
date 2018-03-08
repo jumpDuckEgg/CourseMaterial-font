@@ -1,5 +1,6 @@
 <template>
     <div class="moniExam">
+            <v-btn @click="backPage">返回上一页</v-btn>
         <v-card>
             <v-card-title primary-title>
                 <div>
@@ -18,7 +19,7 @@
                             <span>{{index+1}}.{{item.moniTest_title}}</span>
                             <span>({{item.moniTest_score}}分)</span>
                         </div>
-                        <v-radio-group v-model="item.checkRadio" row>
+                        <v-radio-group v-model="item.checkRadio" >
                             <template v-for="(option,optionIndex) in item.moniTest_optionsData">
                                 <v-radio :label="`${option.id}.${option.options} `" :value="option.id" :key="optionIndex"></v-radio>
                             </template>
@@ -38,7 +39,7 @@
                         </template>
                     </div>
                 </template>
-                <template v-if="radioMoniTest.length>0">
+                <template v-if="judgeMoniTest.length>0">
                     <div>判断题</div>
                     <div :key="'judge'+index" style="width:96%;margin:auto" v-for="(item,index) in judgeMoniTest">
                         <div class="question">
@@ -55,14 +56,14 @@
                 <div class="result" :class="{resultHide:submitFlag}">
                     <div>答题卡：</div>
 
-                    <div class="answer-title">选择题答案：</div>
+                    <div class="answer-title" v-if="radioMoniTest.length>0">选择题答案：</div>
                     <template v-for="(item,index) in radioMoniTest">
                         <div :key="'radioAnswer'+index" class="answer-content">
                             <div>第{{index+1}}题.你的答案：{{item.checkRadio}} || 正确答案：{{item.moniTest_answer}}</div>
                             <div>解析：{{item.moniTest_analysis}}</div>
                         </div>
                     </template>
-                    <div class="answer-title">多选题答案：</div>
+                    <div class="answer-title" v-if="checkMoniTest.length>0">多选题答案：</div>
                     <template v-for="(item,index) in checkMoniTest">
                         <div :key="'checkAnswer'+index" class="answer-content">
                             <div>第{{index+1}}题.你的答案：
@@ -73,7 +74,7 @@
                             <div>解析：{{item.moniTest_analysis}}</div>
                         </div>
                     </template>
-                    <div class="answer-title">选择题答案：</div>
+                    <div class="answer-title" v-if="judgeMoniTest.length>0">判断题答案：</div>
                     <template v-for="(item,index) in judgeMoniTest">
                         <div :key="'judgeAnswer'+index" class="answer-content">
                             <div>第{{index+1}}题.你的答案：{{item.checkRadio |judgeChange}} || 正确答案：{{item.moniTest_answer |judgeChange}}</div>
@@ -152,6 +153,9 @@ export default {
         });
     },
     methods: {
+        backPage() {
+            this.$router.go(-1);
+        },
         checkAnswer(data) {
             console.log("asdasd");
             let answerArr = [];

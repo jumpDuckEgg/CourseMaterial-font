@@ -1,11 +1,12 @@
 <template>
   <div class="courseInformation">
-
+    <v-btn @click="backPage">返回上一页</v-btn>
     <v-layout>
+
       <v-flex xs12 sm8 offset-sm2>
         <div class="courseInformation-title">课程详情</div>
         <v-card>
-          <v-card-media class="white--text" height="275px" :src="courseContent.courseImage">
+          <v-card-media class="white--text" height="355px" :src="courseContent.courseImage">
             <v-container fill-height fluid>
               <v-layout fill-height>
                 <v-flex xs12 align-end flexbox>
@@ -293,9 +294,7 @@
                   <v-text-field label="说点什么吧..." v-model="description" multi-line rows="3" :rules="[(v) => v.length <= 100 || 'Max 100 characters']"></v-text-field>
 
                   <v-menu offset-y>
-                    <v-btn dark small fab color="pink" slot="activator" absolute left bottom>
-                      <v-icon>face</v-icon>
-                    </v-btn>
+
                     <v-list>
                       <v-list-tile>
                         <v-list-tile-title>待定</v-list-tile-title>
@@ -437,6 +436,9 @@ export default {
         };
     },
     methods: {
+        backPage() {
+            this.$router.go(-1);
+        },
         coursewaresPageChange(val) {
             let offset = (val - 1) * this.limitNum;
             this.coursewaresData =
@@ -612,8 +614,10 @@ export default {
                 comment_type: "course",
                 type_id: this.$route.params.id,
                 comment_people: this.$store.state.username,
-                people_image: this.$store.state.userImage
+                people_image: this.$store.state.userImage,
+                createdTime: new Date().getTime()
             };
+
             api.addComment(data).then(res => {
                 if (res.code == 20) {
                     this.description = "";
@@ -809,7 +813,7 @@ export default {
     },
     filters: {
         formatDate: function(value) {
-            return moment(value).format("MMMM Do YYYY");
+            return moment(value).format("YYYY-MM-DD");
         }
     }
 };
@@ -862,10 +866,10 @@ export default {
     margin-bottom: 40px;
 }
 .description {
-    height: 50px;
+    height: 100px;
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 4;
     overflow: hidden;
 }
 </style>

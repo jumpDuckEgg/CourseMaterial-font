@@ -1,5 +1,6 @@
 <template>
     <div class="videoPlay">
+        <v-btn @click="backPage">返回上一页</v-btn>
         <v-card>
             <v-card-title>
                 <div>
@@ -164,6 +165,9 @@ export default {
         });
     },
     methods: {
+        backPage() {
+            this.$router.go(-1);
+        },
         // 评价分页
         pageChange(value) {
             let commentsData = {
@@ -276,7 +280,7 @@ export default {
                     api.getCommentSpecial(commentsData).then(res => {
                         if (res.code == 21) {
                             this.page = 1;
-                            this.dialog =false;
+                            this.dialog = false;
                             this.comments = res.data.comments;
                             this.pageLength = Math.ceil(
                                 res.data.countNum / this.limitNum
