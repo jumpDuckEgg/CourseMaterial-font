@@ -3,7 +3,7 @@
         <v-toolbar dark color="primary">
             <v-toolbar-side-icon>
             </v-toolbar-side-icon>
-            <v-toolbar-title class="white--text">网络应用技术资源库</v-toolbar-title>
+            <v-toolbar-title class="white--text">网络应用技术资源共享课程资源库</v-toolbar-title>
             <v-spacer></v-spacer>
             <v-btn outline @click="register">注册</v-btn>
         </v-toolbar>
@@ -20,11 +20,11 @@
                                         </v-avatar>
                                     </v-flex>
                                     <v-flex class="headline blue--text">
-                                        网络应用技术资源库
+                                        网络应用技术资源共享课程资源库
                                     </v-flex>
                                 </v-layout>
                                 <h3 class="headline mb-0">登录</h3>
-                                <div>使用您的 JumpDuckEgg 帐号</div>
+                                <div>使用您的 网络应用技术资源共享课程资源库 帐号</div>
                             </div>
                         </v-card-title>
                         <v-card-text>

@@ -54,9 +54,7 @@
                   <v-text-field label="说点什么吧..." v-model="description" multi-line rows="3" :rules="[(v) => v.length <= 100 || 'Max 100 characters']"></v-text-field>
 
                   <v-menu offset-y>
-                    <v-btn dark small fab color="pink" slot="activator" absolute left bottom>
-                      <v-icon>face</v-icon>
-                    </v-btn>
+                    
                     <v-list>
                       <v-list-tile>
                         <v-list-tile-title>待定</v-list-tile-title>

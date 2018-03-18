@@ -4,7 +4,7 @@
     <v-toolbar dark color="primary">
       <v-toolbar-side-icon to='/'>
       </v-toolbar-side-icon>
-      <v-toolbar-title class="white--text">网络应用技术资源库</v-toolbar-title>
+      <v-toolbar-title class="white--text">网络应用技术资源共享课程资源库</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-tooltip bottom>
         <v-avatar slot="activator" @click="toPersonCenter">

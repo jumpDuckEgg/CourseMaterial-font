@@ -4,19 +4,19 @@
       <v-toolbar-side-icon>
         <img src="../../static/duck.png" alt="duck" style="width:30px;height:30px;">
       </v-toolbar-side-icon>
-      <v-toolbar-title class="white--text">网络应用技术资源库</v-toolbar-title>
+      <v-toolbar-title class="white--text">网络应用技术资源共享课程资源库</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn outline @click="login">
         登录
       </v-btn>
     </v-toolbar>
-    <div class="register__title display-1 my-5">创建您的 网络应用技术资源库 帐号</div>
+    <div class="register__title display-1 my-5">创建您的 网络应用技术资源共享课程资源库 帐号</div>
     <v-container>
       <v-layout row wrap>
         <v-spacer></v-spacer>
         <v-flex xs4 justify-center>
           <div class="register_center title my-1">您只需注册一个帐号即可</div>
-          <div class="register_center body-1 my-3">只需一个免费帐号，即可畅享 网络应用技术资源库 的所有产品和服务.</div>
+          <div class="register_center body-1 my-3">只需一个免费帐号，即可畅享 网络应用技术资源共享课程资源库 的所有产品和服务.</div>
           <div class="register_logo-strip my-5"></div>
           <div class="register_center title mt-5">随时随地使用</div>
           <div class="register_center body-1 my-4">从一台设备换到另一台设备时，会紧接着上次中断处继续。</div>
