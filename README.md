@@ -1,6 +1,6 @@
-# font
+# 课程资源库设计和实现
 
-> A Vue.js project
+> 通过vue全家桶+vuetifyUi+axios实现
 
 ## Build Setup
 
